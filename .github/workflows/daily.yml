@@ -1,0 +1,67 @@
+name: 楽天アフィリエイト 日次投稿
+
+on:
+  schedule:
+    # 毎朝9時（JST）に実行 ← UTC で 00:00
+    - cron: "0 0 * * *"
+  workflow_dispatch:   # 手動実行ボタン（テスト用）
+    inputs:
+      dry_run:
+        description: "dry-run（投稿しない）"
+        type: boolean
+        default: false
+      threads_only:
+        description: "Threadsのみ投稿"
+        type: boolean
+        default: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python 3.12 セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: 日本語フォントをインストール
+        run: sudo apt-get install -y fonts-noto-cjk
+
+      - name: 依存関係をインストール
+        run: pip install -r requirements.txt
+
+      - name: 出力ディレクトリを作成
+        run: mkdir -p output/images
+
+      - name: 投稿を実行
+        env:
+          RAKUTEN_APP_ID:         ${{ secrets.RAKUTEN_APP_ID }}
+          RAKUTEN_AFFILIATE_ID:   ${{ secrets.RAKUTEN_AFFILIATE_ID }}
+          ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
+          META_ACCESS_TOKEN:      ${{ secrets.META_ACCESS_TOKEN }}
+          INSTAGRAM_ACCOUNT_ID:   ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
+          THREADS_USER_ID:        ${{ secrets.THREADS_USER_ID }}
+          R2_ACCOUNT_ID:          ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY:          ${{ secrets.R2_ACCESS_KEY }}
+          R2_SECRET_KEY:          ${{ secrets.R2_SECRET_KEY }}
+          R2_BUCKET_NAME:         ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL:          ${{ secrets.R2_PUBLIC_URL }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          if [ "${{ inputs.threads_only }}" = "true" ]; then ARGS="$ARGS --threads-only"; fi
+          python main.py $ARGS
+
+      - name: ログをArtifactとして保存（30日間）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-log-${{ github.run_id }}
+          path: output/log.jsonl
+          retention-days: 30
