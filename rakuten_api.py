@@ -4,14 +4,15 @@
 """
 import requests
 import random
+import os  
 from dataclasses import dataclass, field
 from typing import Optional
 from config import (
-    RAKUTEN_APP_ID, RAKUTEN_AFFILIATE_ID,
+    RAKUTEN_APP_ID, RAKUTEN_ACCESS_KEY, RAKUTEN_AFFILIATE_ID,
     RAKUTEN_GENRE_IDS, MIN_REVIEW_COUNT, MIN_REVIEW_AVERAGE
 )
 
-BASE_URL = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706"
+BASE_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260401"
 
 
 @dataclass
@@ -34,18 +35,25 @@ def fetch_trending_products(genre_id: str, count: int = 10) -> list[Product]:
     """指定ジャンルのランキング上位商品を取得する"""
     params = {
         "applicationId": RAKUTEN_APP_ID,
+        "accessKey": RAKUTEN_ACCESS_KEY,
         "affiliateId": RAKUTEN_AFFILIATE_ID,
         "genreId": genre_id,
         "hits": 30,               # 多めに取得してフィルタ後に絞る
         "sort": "-reviewCount",   # レビュー数降順
         "minReviewCount": MIN_REVIEW_COUNT,
-        "minAffiliateRate": 1,    # アフィリエイト率1%以上の商品のみ
         "imageFlag": 1,           # 画像あり商品のみ
         "formatVersion": 2,
     }
 
-    try:
-        resp = requests.get(BASE_URL, params=params, timeout=10)
+    try:                          
+        resp = requests.get(
+            BASE_URL,
+            params=params,
+            headers={
+                "Referer": "https://rakuten.co.jp/",
+            },
+            timeout=10
+        )
         resp.raise_for_status()
         data = resp.json()
     except Exception as e:

@@ -6,6 +6,7 @@ import os
 
 # ── 楽天API ──────────────────────────────────────────────
 RAKUTEN_APP_ID = os.environ["RAKUTEN_APP_ID"]          # 楽天デベロッパー登録で取得
+RAKUTEN_ACCESS_KEY = os.environ["RAKUTEN_ACCESS_KEY"]
 RAKUTEN_AFFILIATE_ID = os.environ["RAKUTEN_AFFILIATE_ID"]  # 楽天アフィリエイト登録で取得
 
 # ── Claude API ────────────────────────────────────────────
