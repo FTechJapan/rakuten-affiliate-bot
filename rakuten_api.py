@@ -50,7 +50,7 @@ def fetch_trending_products(genre_id: str, count: int = 10) -> list[Product]:
             BASE_URL,
             params=params,
             headers={
-                "Referer": "https://rakuten.co.jp/",
+                "Referer": "https://ftechjapan.github.io/",
             },
             timeout=10
         )
