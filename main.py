@@ -14,13 +14,12 @@ import argparse
 from datetime import datetime, UTC
 from pathlib import Path
 
-from rakuten_api import pick_daily_products
+from rakuten_api import Product
 from image_generator import create_ad_image
 from copy_generator import generate_copy
 from storage import upload_image
-from threads_poster import post_text_to_threads, post_image_to_threads
+from threads_poster import post_image_to_threads
 from instagram_poster import post_image_to_instagram, check_daily_limit
-from config import POSTS_PER_DAY
 
 LOG_FILE = Path("output/log.jsonl")
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -41,7 +40,10 @@ def run(dry_run: bool = False, threads_only: bool = False):
     print(f"{'='*50}\n")
 
     # ── 1. 商品取得 ─────────────────────────────────────
-    products = pick_daily_products(POSTS_PER_DAY)
+    with open("products.json", encoding="utf-8") as f:
+        data = json.load(f)
+    products = [Product(**p) for p in data]
+    print(f"[商品] products.jsonから{len(products)}件読み込み完了")
 
     for idx, product in enumerate(products):
         print(f"\n[{idx+1}/{len(products)}] {product.name[:40]}")
