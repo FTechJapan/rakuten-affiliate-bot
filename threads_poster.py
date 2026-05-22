@@ -11,7 +11,7 @@ Threads API (Meta) を使ってテキスト＋画像を投稿する
 import time
 import requests
 from pathlib import Path
-from config import META_ACCESS_TOKEN, THREADS_USER_ID
+from config import THREADS_ACCESS_TOKEN, THREADS_USER_ID
 
 GRAPH_API = "https://graph.threads.net/v1.0"
 
@@ -39,7 +39,7 @@ def post_text_to_threads(text: str) -> str | None:
         data={
             "media_type": "TEXT",
             "text": text,
-            "access_token": META_ACCESS_TOKEN,
+            "access_token": THREADS_ACCESS_TOKEN,
         },
         timeout=30,
     )
@@ -59,7 +59,7 @@ def post_text_to_threads(text: str) -> str | None:
         f"{GRAPH_API}/{THREADS_USER_ID}/threads_publish",
         data={
             "creation_id": container_id,
-            "access_token": META_ACCESS_TOKEN,
+            "access_token": THREADS_ACCESS_TOKEN,
         },
         timeout=30,
     )
@@ -85,7 +85,7 @@ def post_image_to_threads(image_url: str, caption: str) -> str | None:
             "media_type": "IMAGE",
             "image_url": image_url,
             "text": caption,
-            "access_token": META_ACCESS_TOKEN,
+            "access_token": THREADS_ACCESS_TOKEN,
         },
         timeout=30,
     )
@@ -100,7 +100,7 @@ def post_image_to_threads(image_url: str, caption: str) -> str | None:
         time.sleep(5)
         status_resp = requests.get(
             f"{GRAPH_API}/{container_id}",
-            params={"fields": "status,error_code", "access_token": META_ACCESS_TOKEN},
+            params={"fields": "status,error_code", "access_token": THREADS_ACCESS_TOKEN},
             timeout=10,
         )
         status = status_resp.json().get("status", "")
@@ -116,7 +116,7 @@ def post_image_to_threads(image_url: str, caption: str) -> str | None:
         f"{GRAPH_API}/{THREADS_USER_ID}/threads_publish",
         data={
             "creation_id": container_id,
-            "access_token": META_ACCESS_TOKEN,
+            "access_token": THREADS_ACCESS_TOKEN,
         },
         timeout=30,
     )

@@ -73,7 +73,8 @@ curl "https://graph.threads.net/v1.0/me?access_token=YOUR_TOKEN"
 | `RAKUTEN_APP_ID` | 楽天アプリID |
 | `RAKUTEN_AFFILIATE_ID` | 楽天アフィリエイトID |
 | `ANTHROPIC_API_KEY` | Claude APIキー |
-| `META_ACCESS_TOKEN` | Metaの長期アクセストークン |
+| `THREADS_ACCESS_TOKEN` | Threads アクセストークン |
+| `INSTAGRAM_ACCESS_TOKEN` | Instagram アクセストークン |
 | `INSTAGRAM_ACCOUNT_ID` | InstagramアカウントID |
 | `THREADS_USER_ID` | ThreadsユーザーID |
 | `R2_ACCOUNT_ID` | CloudflareアカウントID |

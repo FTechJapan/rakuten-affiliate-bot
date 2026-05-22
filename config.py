@@ -13,7 +13,8 @@ RAKUTEN_AFFILIATE_ID = os.environ["RAKUTEN_AFFILIATE_ID"]  # 楽天アフィリ�
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]    # console.anthropic.com で取得
 
 # ── Meta (Instagram / Threads) ───────────────────────────
-META_ACCESS_TOKEN = os.environ["META_ACCESS_TOKEN"]    # 長期アクセストークン（60日有効）
+THREADS_ACCESS_TOKEN   = os.environ["THREADS_ACCESS_TOKEN"]
+INSTAGRAM_ACCESS_TOKEN = os.environ["INSTAGRAM_ACCESS_TOKEN"]
 INSTAGRAM_ACCOUNT_ID = os.environ["INSTAGRAM_ACCOUNT_ID"]
 THREADS_USER_ID = os.environ["THREADS_USER_ID"]        # Threadsのユーザーid
 
