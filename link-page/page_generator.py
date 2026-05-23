@@ -10,6 +10,8 @@ GENRE_TO_CAT = {
     "559617": "cleaning",
     "213244": "appliance",
     "215783": "interior",
+    "100533": "living",
+    "565105": "cleaning",
 }
 
 def _star_html(avg):
