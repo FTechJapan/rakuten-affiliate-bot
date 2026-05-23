@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{PROFILE_NAME}} | 楽天おすすめ</title>
+<title>{{PROFILE_NAME}} | 楽天市場おすすめ商品まとめ</title>
+<meta name="description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。レビュー高評価・コスパ最強商品を厳選しています。">
+<meta name="keywords" content="楽天,おすすめ,掃除グッズ,家電,雑貨,コスパ,レビュー">
+<meta property="og:title" content="{{PROFILE_NAME}} | 楽天市場おすすめ商品まとめ"/>
+<meta property="og:description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。"/>
+<meta property="og:type" content="website"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -11,10 +17,10 @@
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .hero{background:var(--accent);padding:48px 20px 36px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08)}
-.avatar{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px;position:relative;z-index:1}
+.hero-icon{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px;position:relative;z-index:1}
 .hero h1{font-size:22px;font-weight:900;color:#fff;position:relative;z-index:1}
 .hero p{font-size:13px;color:rgba(255,255,255,.8);margin-top:6px;line-height:1.6;position:relative;z-index:1}
-.hero-badges{display:flex;gap:8px;justify-content:center;margin-top:14px;position:relative;z-index:1}
+.hero-badges{display:flex;gap:8px;justify-content:center;margin-top:14px;position:relative;z-index:1;flex-wrap:wrap}
 .badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff}
 .container{max-width:480px;margin:0 auto;padding:24px 16px 60px}
 .update-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:24px}
@@ -43,57 +49,68 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .price{font-size:18px;font-weight:900;color:var(--accent);letter-spacing:-.5px}
 .price-sub{font-size:11px;color:var(--muted);margin-top:1px}
 .cta-chip{font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:var(--accent);color:#fff;white-space:nowrap}
-.off-badge{position:absolute;top:8px;right:8px;font-size:10px;font-weight:900;background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px}
 .sns-links{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
 .sns-link{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;text-decoration:none;color:inherit;font-weight:700;font-size:14px;transition:transform .15s}
 .sns-link:hover{transform:translateY(-1px)}
 .sns-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .sns-link .arrow{margin-left:auto;color:var(--muted);font-size:18px}
+.about-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:32px}
+.about-section h2{font-size:14px;font-weight:900;margin-bottom:8px}
+.about-section p{font-size:12px;color:var(--muted);line-height:1.8}
 footer{text-align:center;padding:32px 20px;font-size:11px;color:var(--muted);line-height:2;border-top:1px solid var(--border)}
 </style>
 </head>
 <body>
-<div class="hero">
-  <div class="avatar">🛒</div>
+<header class="hero">
+  <div class="hero-icon">&#128722;</div>
   <h1>{{PROFILE_NAME}}</h1>
-  <p>毎日更新！楽天で本当に良かった<br>アイテムをまとめています</p>
+  <p>掃除グッズ・家電・おしゃれ雑貨など<br>楽天市場で本当に良かったものを毎日更新</p>
   <div class="hero-badges">
     <span class="badge">楽天公式アフィリエイト</span>
+    <span class="badge">毎日更新</span>
     <span class="badge">#PR</span>
   </div>
-</div>
-<div class="container">
+</header>
+<main class="container">
   <div class="update-bar">
     <span class="dot"></span>
-    <span>{{UPDATE_DATE}} 更新 — 本日のおすすめ {{PRODUCT_COUNT}}件</span>
+    <span>{{UPDATE_DATE}} 更新 &mdash; 本日のおすすめ {{PRODUCT_COUNT}}件</span>
   </div>
-  <div class="category-nav">
+
+  <section class="about-section">
+    <h2>このサイトについて</h2>
+    <p>楽天市場でレビュー高評価・コスパ最強のアイテムを厳選して毎日ご紹介しています。掃除が楽になるグッズ、生活を便利にする家電、部屋をおしゃれにする雑貨など、実際に良いと思ったものだけを掲載しています。</p>
+  </section>
+
+  <nav class="category-nav" aria-label="カテゴリ">
     <button class="cat-btn active" onclick="filterCat('all',this)">すべて</button>
     <button class="cat-btn" onclick="filterCat('cleaning',this)">掃除グッズ</button>
     <button class="cat-btn" onclick="filterCat('appliance',this)">家電</button>
     <button class="cat-btn" onclick="filterCat('interior',this)">おしゃれ雑貨</button>
-  </div>
+  </nav>
+
   <p class="section-label">本日のおすすめ</p>
   <div class="products" id="product-list">
     {{PRODUCT_CARDS}}
   </div>
-  <p class="section-label">フォローはこちら</p>
+
+  <p class="section-label">SNSでもご紹介中</p>
   <div class="sns-links">
-    <a href="{{INSTAGRAM_URL}}" class="sns-link">
-      <div class="sns-icon" style="background:#fce4ec">📸</div>
+    <a href="{{INSTAGRAM_URL}}" class="sns-link" target="_blank" rel="noopener noreferrer">
+      <div class="sns-icon" style="background:#fce4ec">&#128248;</div>
       <span>Instagram</span>
-      <span class="arrow">›</span>
+      <span class="arrow">&#8250;</span>
     </a>
-    <a href="{{THREADS_URL}}" class="sns-link">
-      <div class="sns-icon" style="background:#ede7f6">🧵</div>
+    <a href="{{THREADS_URL}}" class="sns-link" target="_blank" rel="noopener noreferrer">
+      <div class="sns-icon" style="background:#ede7f6">&#129525;</div>
       <span>Threads</span>
-      <span class="arrow">›</span>
+      <span class="arrow">&#8250;</span>
     </a>
   </div>
-</div>
+</main>
 <footer>
-  当ページのリンクは楽天アフィリエイトを使用しています（#PR）<br>
-  商品の価格・在庫状況は楽天市場の情報をご確認ください
+  <p>当サイトのリンクは楽天アフィリエイトを使用しています（#PR）</p>
+  <p>商品の価格・在庫状況は楽天市場の情報をご確認ください</p>
 </footer>
 <script>
 function filterCat(cat,btn){
