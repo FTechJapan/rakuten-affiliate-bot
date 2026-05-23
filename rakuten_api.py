@@ -5,8 +5,7 @@
 import requests
 import random
 import os  
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 from config import (
     RAKUTEN_APP_ID, RAKUTEN_ACCESS_KEY, RAKUTEN_AFFILIATE_ID,
     RAKUTEN_GENRE_IDS, MIN_REVIEW_COUNT, MIN_REVIEW_AVERAGE
@@ -65,6 +64,12 @@ def fetch_trending_products(genre_id: str, count: int = 10) -> list[Product]:
         avg = float(item.get("reviewAverage", 0))
         if avg < MIN_REVIEW_AVERAGE:
             continue
+
+        # 割引商品のみ（最高価格より現在価格が低い場合のみ）
+        price_max = int(item.get("itemPriceMax1", 0))
+        price_min = int(item.get("itemPrice", 0))
+        if price_max > 0 and price_min >= price_max:
+            continue  # 割引なしはスキップ
 
         # 画像URLが存在する場合だけ追加
         images = item.get("mediumImageUrls", [])
