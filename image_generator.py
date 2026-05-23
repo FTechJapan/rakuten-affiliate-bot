@@ -21,7 +21,12 @@ FONT_PATHS = [
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
     "/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc",
     "/usr/share/fonts/noto-cjk/NotoSansCJKjp-Bold.otf",
-    "assets/fonts/NotoSansJP-Bold.ttf",   # ローカルフォールバック
+    "assets/fonts/NotoSansJP-Bold.ttf",
+]
+
+EMOJI_FONT_PATHS = [
+    "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf",
+    "/usr/share/fonts/noto/NotoColorEmoji.ttf",
 ]
 
 
@@ -68,7 +73,7 @@ def create_ad_image(product: Product, platform: str = "instagram") -> Path:
 
     # ── ブランドロゴ文字 ────────────────────────────────
     font_logo = _get_font(28)
-    draw.text((32, 24), "🛒 楽天 おすすめ", font=font_logo, fill=ACCENT_COLOR)
+    draw.text((32, 24), "楽天市場 おすすめアイテム", font=font_logo, fill=ACCENT_COLOR)
 
     # ── 商品画像（中央に大きく配置） ────────────────────
     try:
@@ -125,25 +130,25 @@ def create_ad_image(product: Product, platform: str = "instagram") -> Path:
     stars_str = f"{_star_rating(product.review_average)}  {product.review_average:.1f}  ({product.review_count:,}件)"
     draw.text((40, stars_y), stars_str, font=font_stars, fill=(200, 140, 0))
 
-    # ── CTAボタン ─────────────────────────────────────
-    btn_y = H - 100
+  # ── CTAボタン ─────────────────────────────────────
+    btn_y = H - 120
     draw.rounded_rectangle(
-        [(40, btn_y), (W - 40, btn_y + 60)],
-        radius=30, fill=BRAND_COLOR
+    [(40, btn_y), (W - 40, btn_y + 70)],
+    radius=30, fill=BRAND_COLOR
     )
     font_btn = _get_font(28)
     draw.text(
-        (W // 2, btn_y + 30),
-        "👆 プロフのリンクからチェック！",
-        font=font_btn, fill=ACCENT_COLOR, anchor="mm"
-    )
+    (W // 2, btn_y + 35),
+    "プロフのリンクからチェック！",
+    font=font_btn, fill=ACCENT_COLOR, anchor="mm"
+)
 
     # ── フッター ─────────────────────────────────────
     font_footer = _get_font(18)
     draw.text(
-        (W // 2, H - 24),
-        "#PR #楽天 #楽天お買い物",
-        font=font_footer, fill=(160, 160, 160), anchor="ms"
+    (W // 2, H - 30),
+    "#PR #楽天 #楽天お買い物",
+    font=font_footer, fill=(160, 160, 160), anchor="ms"
     )
 
     # ── 保存 ─────────────────────────────────────────
