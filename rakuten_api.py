@@ -1,83 +1,115 @@
-import json
-import subprocess
-from datetime import datetime, UTC
-from pathlib import Path
-from rakuten_api import pick_daily_products
-from config import POSTS_PER_DAY
+"""
+楽天商品検索モジュール
+楽天商品検索API v2 を使ってランキング上位商品を取得する
+"""
+import requests
+import random
+import time
+from dataclasses import dataclass
+from config import (
+    RAKUTEN_APP_ID, RAKUTEN_ACCESS_KEY, RAKUTEN_AFFILIATE_ID,
+    RAKUTEN_GENRE_IDS, MIN_REVIEW_COUNT, MIN_REVIEW_AVERAGE
+)
 
-POSTED_LOG = Path("posted_items.json")
-
-
-def load_posted_items() -> set:
-    """過去に投稿したitem_codeの一覧を読み込む"""
-    if POSTED_LOG.exists():
-        with open(POSTED_LOG, encoding="utf-8") as f:
-            return set(json.load(f))
-    return set()
+BASE_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260401"
 
 
-def save_posted_items(posted: set):
-    """投稿済みitem_codeを保存（最新1000件まで保持）"""
-    items = list(posted)[-1000:]
-    with open(POSTED_LOG, "w", encoding="utf-8") as f:
-        json.dump(items, f, ensure_ascii=False)
+@dataclass
+class Product:
+    item_code: str
+    name: str
+    price: int
+    review_count: int
+    review_average: float
+    image_url: str
+    item_url: str
+    affiliate_url: str
+    shop_name: str
+    genre_id: str
+    catch_copy: str = ""
+    item_caption: str = ""
 
 
-def main():
-    print("楽天API商品取得開始...")
+def fetch_trending_products(genre_id: str, count: int = 10) -> list[Product]:
+    """指定ジャンルのランキング上位商品を取得する"""
+    params = {
+        "applicationId": RAKUTEN_APP_ID,
+        "accessKey": RAKUTEN_ACCESS_KEY,
+        "affiliateId": RAKUTEN_AFFILIATE_ID,
+        "genreId": genre_id,
+        "hits": 30,               # 多めに取得してフィルタ後に絞る
+        "sort": "-reviewCount",   # レビュー数降順
+        "minReviewCount": MIN_REVIEW_COUNT,
+        "imageFlag": 1,           # 画像あり商品のみ
+        "formatVersion": 2,
+    }
 
-    # 過去の投稿済み商品を読み込む
-    posted_items = load_posted_items()
-    print(f"[重複防止] 過去の投稿済み商品: {len(posted_items)}件")
+    try:                          
+        resp = requests.get(
+            BASE_URL,
+            params=params,
+            headers={
+                "Referer": "https://ftechjapan.github.io/",
+            },
+            timeout=10
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        print(f"[楽天API] 取得失敗 genreId={genre_id}: {e}")
+        return []
 
-    # 多めに取得してフィルタリング
-    all_products = pick_daily_products(POSTS_PER_DAY * 5)
+    products = []
+    for item in data.get("Items", []):
+        avg = float(item.get("reviewAverage", 0))
+        if avg < MIN_REVIEW_AVERAGE:
+            continue
 
-    # 投稿済み商品を除外
-    new_products = [p for p in all_products if p.item_code not in posted_items]
-    print(f"[重複防止] 未投稿商品: {len(new_products)}件")
+        # 割引商品のみ（最高価格より現在価格が低い場合のみ）
+        price_max = int(item.get("itemPriceMax1", 0))
+        price_min = int(item.get("itemPrice", 0))
+        if price_max > 0 and price_min >= price_max:
+            continue  # 割引なしはスキップ
 
-    if len(new_products) < POSTS_PER_DAY:
-        print("[重複防止] 未投稿商品が不足しています。投稿済みリストをリセットします。")
-        posted_items = set()
-        new_products = all_products
+        # 画像URLが存在する場合だけ追加
+        images = item.get("mediumImageUrls", [])
+        if not images:
+            continue
+        image_url = images[0].replace("?_ex=128x128", "?_ex=500x500")  # 高解像度に変換
 
-    # 必要件数に絞る
-    selected = new_products[:POSTS_PER_DAY]
+        products.append(Product(
+            item_code=item["itemCode"],
+            name=item["itemName"][:60],          # 長すぎる商品名は切る
+            price=int(item["itemPrice"]),
+            review_count=int(item.get("reviewCount", 0)),
+            review_average=avg,
+            image_url=image_url,
+            item_url=item["itemUrl"],
+            affiliate_url=item.get("affiliateUrl", item["itemUrl"]),
+            shop_name=item.get("shopName", ""),
+            genre_id=genre_id,
+            catch_copy=item.get("catchcopy", ""),
+            item_caption=item.get("itemCaption", "")[:200],
+        ))
 
-    # products.jsonに保存
-    data = []
-    for p in selected:
-        data.append({
-            "item_code": p.item_code,
-            "name": p.name,
-            "price": p.price,
-            "review_count": p.review_count,
-            "review_average": p.review_average,
-            "image_url": p.image_url,
-            "item_url": p.item_url,
-            "affiliate_url": p.affiliate_url,
-            "shop_name": p.shop_name,
-            "genre_id": p.genre_id,
-            "catch_copy": p.catch_copy,
-            "item_caption": p.item_caption,
-        })
-
-    with open("products.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"{len(data)}件の商品をproducts.jsonに保存しました")
-
-    # 投稿済みリストを更新
-    for p in selected:
-        posted_items.add(p.item_code)
-    save_posted_items(posted_items)
-
-    # GitHubにpush
-    subprocess.run(["git", "add", "products.json", "posted_items.json"])
-    subprocess.run(["git", "commit", "-m", f"update products {datetime.now(UTC).strftime('%Y-%m-%d')}"])
-    subprocess.run(["git", "push"])
-    print("GitHubにpushしました → GitHub Actionsが自動起動します")
+    # フィルタ後にランダムシャッフルして多様性を出す
+    random.shuffle(products)
+    return products[:count]
 
 
-if __name__ == "__main__":
-    main()
+def pick_daily_products(posts_per_day: int = 3) -> list[Product]:
+    """全ジャンルからランダムに指定件数の商品を選ぶ"""
+    all_products: list[Product] = []
+    for genre_id in RAKUTEN_GENRE_IDS:
+        products = fetch_trending_products(genre_id, count=5)
+        all_products.extend(products)
+        print(f"[楽天API] genreId={genre_id}: {len(products)}件取得")
+        time.sleep(2)
+
+    if not all_products:
+        raise RuntimeError("商品が1件も取得できませんでした。APIキーを確認してください。")
+
+    random.shuffle(all_products)
+    selected = all_products[:posts_per_day]
+    print(f"[楽天API] 本日投稿予定: {len(selected)}件")
+    return selected
