@@ -7,9 +7,9 @@ TEMPLATE_PATH = Path("link-page/index.html")
 OUTPUT_PATH   = Path("link-page/index.html")
 
 GENRE_TO_CAT = {
-    "100371": "cosme",
-    "216131": "food",
-    "100533": "living",
+    "559617": "cleaning",
+    "213244": "appliance",
+    "215783": "interior",
 }
 
 def _star_html(avg):
@@ -25,8 +25,6 @@ def generate_from_json():
     for i, p in enumerate(products):
         cat = GENRE_TO_CAT.get(p.get("genre_id",""), "all")
         stars = _star_html(p.get("review_average", 0))
-        original = int(p["price"] * 1.3)
-        discount = round((1 - p["price"] / original) * 100)
         cards += f"""
     <a class="product-card" href="{p['affiliate_url']}"
        target="_blank" rel="noopener noreferrer" data-cat="{cat}">
@@ -43,18 +41,17 @@ def generate_from_json():
         <div class="product-bottom">
           <div>
             <div class="price">¥{p['price']:,}</div>
-            <div class="price-sub">通常 ¥{original:,}</div>
+            <div class="price-sub">楽天市場で詳細を確認</div>
           </div>
           <span class="cta-chip">チェック →</span>
         </div>
       </div>
-      {"<span class='off-badge'>"+str(discount)+"%OFF</span>" if discount > 10 else ""}
     </a>"""
 
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     today = datetime.now(UTC).strftime("%Y年%-m月%-d日")
     html = (template
-        .replace("{{PROFILE_NAME}}",  "楽天おすすめBot")
+        .replace("{{PROFILE_NAME}}",  "楽天おすすめ厳選アイテム")
         .replace("{{UPDATE_DATE}}",   today)
         .replace("{{PRODUCT_COUNT}}", str(len(products)))
         .replace("{{PRODUCT_CARDS}}", cards)
