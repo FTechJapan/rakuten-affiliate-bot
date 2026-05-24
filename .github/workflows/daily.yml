@@ -1,5 +1,4 @@
 name: 楽天アフィリエイト 日次投稿
-
 on:
   push:
     paths:
@@ -14,12 +13,12 @@ on:
         description: "Threadsのみ投稿"
         type: boolean
         default: false
-
 jobs:
   post:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-
+    permissions:
+      contents: write
     steps:
       - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
@@ -42,7 +41,7 @@ jobs:
       - name: 投稿を実行
         env:
           RAKUTEN_APP_ID:         ${{ secrets.RAKUTEN_APP_ID }}
-          RAKUTEN_ACCESS_KEY:     ${{ secrets.RAKUTEN_ACCESS_KEY }} 
+          RAKUTEN_ACCESS_KEY:     ${{ secrets.RAKUTEN_ACCESS_KEY }}
           RAKUTEN_AFFILIATE_ID:   ${{ secrets.RAKUTEN_AFFILIATE_ID }}
           ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
           THREADS_ACCESS_TOKEN:   ${{ secrets.THREADS_ACCESS_TOKEN }}
@@ -59,6 +58,15 @@ jobs:
           if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
           if [ "${{ inputs.threads_only }}" = "true" ]; then ARGS="$ARGS --threads-only"; fi
           python main.py $ARGS
+
+      - name: posted_items.jsonをGitHubにpush
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add posted_items.json
+          git diff --cached --quiet || git commit -m "update posted items [skip ci]"
+          git push
 
       - name: ログをArtifactとして保存（30日間）
         if: always()
