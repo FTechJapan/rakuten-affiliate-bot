@@ -25,6 +25,17 @@ MIN_PRICE = 500                # 最低価格（安すぎる商品は除外）
 MAX_PRICE = 15000              # 最高価格（高すぎる商品は衝動買いされにくい）
 MIN_AFFILIATE_RATE = 2.0       # アフィリエイト率2%以上
 
+# ── 除外キーワード（服・下着・ファッション系） ────────────
+EXCLUDE_KEYWORDS = [
+    "ブラ", "ブラトップ", "ブラジャー", "下着", "ランジェリー",
+    "タイツ", "レギンス", "授乳ブラ", "ショーツ", "インナー",
+    "ガードル", "補正", "ワンピース", "スカート", "デニム",
+    "ジーンズ", "トップス", "カットソー", "ニット", "セーター",
+    "パジャマ", "ルームウェア", "水着", "ビキニ", "レオタード",
+    "スパッツ", "レギンスパンツ", "スキニー", "チュニック",
+    "カーディガン", "ブラウス", "シャツ", "ポロシャツ",
+]
+
 
 @dataclass
 class Product:
@@ -75,19 +86,19 @@ def fetch_trending_products(genre_id: str, count: int = 10) -> list[Product]:
         review_count = int(item.get("reviewCount", 0))
         price = int(item.get("itemPrice", 0))
         affiliate_rate = float(item.get("affiliateRate", 0))
+        item_name = item.get("itemName", "")
+
+        # ── 除外キーワードチェック ────────────────────────
+        if any(kw in item_name for kw in EXCLUDE_KEYWORDS):
+            continue
 
         # ── フィルター条件 ────────────────────────────────
-        # レビュー数・評価フィルター（バズ基準）
         if avg < MIN_REVIEW_AVERAGE_BUZZ:
             continue
         if review_count < MIN_REVIEW_COUNT_BUZZ:
             continue
-
-        # 価格帯フィルター（衝動買いしやすい価格）
         if price < MIN_PRICE or price > MAX_PRICE:
             continue
-
-        # アフィリエイト率フィルター
         if affiliate_rate < MIN_AFFILIATE_RATE:
             continue
 
@@ -105,7 +116,7 @@ def fetch_trending_products(genre_id: str, count: int = 10) -> list[Product]:
 
         products.append(Product(
             item_code=item["itemCode"],
-            name=item["itemName"][:60],
+            name=item_name[:60],
             price=price,
             review_count=review_count,
             review_average=avg,
@@ -147,6 +158,7 @@ def select_buzz_products(products: list[Product], need: int) -> list[Product]:
 - コスパが良く、衝動買いしやすい価格帯
 - レビュー件数が多く信頼性が高い
 - ターゲット（主婦・20〜40代女性）に刺さりやすい
+- 服・ファッション・下着・ランジェリー系は選ばない
 
 【商品リスト】
 {product_list}
@@ -159,7 +171,7 @@ def select_buzz_products(products: list[Product], need: int) -> list[Product]:
     try:
         message = client.messages.create(
             model="claude-sonnet-4-5",
-            max_tokens=500,
+            max_tokens=200,
             messages=[{"role": "user", "content": prompt}],
         )
         raw = message.content[0].text.strip()
@@ -169,12 +181,10 @@ def select_buzz_products(products: list[Product], need: int) -> list[Product]:
                 raw = raw[4:]
         result = json.loads(raw)
         selected_indices = [i - 1 for i in result.get("selected", []) if 1 <= i <= len(products)]
-        reasons = result.get("reasons", [])
 
         selected = [products[i] for i in selected_indices if i < len(products)]
-        for i, p in enumerate(selected):
-            reason = reasons[i] if i < len(reasons) else ""
-            print(f"[Claude選別] ✅ {p.name[:30]} → {reason}")
+        for p in selected:
+            print(f"[Claude選別] ✅ {p.name[:40]}")
 
         return selected[:need]
 
