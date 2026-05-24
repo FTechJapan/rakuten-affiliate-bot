@@ -1,11 +1,11 @@
 from datetime import datetime, UTC
 from pathlib import Path
-import json, sys, os
+import json, sys
 sys.path.insert(0, '.')
 
-TEMPLATE_PATH  = Path("link-page/index.html")
-OUTPUT_PATH    = Path("link-page/index.html")
-ALL_PRODUCTS_PATH = Path("link-page/all_products.json")  # 累積ファイル
+TEMPLATE_PATH     = Path("link-page/index.html")
+OUTPUT_PATH       = Path("link-page/index.html")
+ALL_PRODUCTS_PATH = Path("link-page/all_products.json")
 
 GENRE_TO_CAT = {
     "100533": "living",
@@ -23,7 +23,6 @@ def _star_html(avg):
 
 
 def load_all_products() -> list:
-    """累積商品データを読み込む"""
     if ALL_PRODUCTS_PATH.exists():
         with open(ALL_PRODUCTS_PATH, encoding="utf-8") as f:
             return json.load(f)
@@ -31,22 +30,40 @@ def load_all_products() -> list:
 
 
 def save_all_products(products: list):
-    """累積商品データを保存（最新300件まで）"""
     with open(ALL_PRODUCTS_PATH, "w", encoding="utf-8") as f:
         json.dump(products[-300:], f, ensure_ascii=False, indent=2)
 
 
 def merge_products(existing: list, new_products: list) -> list:
-    """新しい商品を追加（item_codeで重複排除、新しいものを先頭に）"""
     existing_codes = {p["item_code"] for p in existing}
     added = [p for p in new_products if p["item_code"] not in existing_codes]
-    # 新しい商品を先頭に追加
     merged = added + existing
     print(f"[蓄積] 新規追加: {len(added)}件 / 累計: {len(merged)}件")
     return merged
 
 
-def _make_card(p: dict, rank: int) -> str:
+def _make_today_card(p: dict, rank: int) -> str:
+    """本日のおすすめカード（横スクロール用）"""
+    cat   = GENRE_TO_CAT.get(p.get("genre_id", ""), "all")
+    stars = _star_html(p.get("review_average", 0))
+    return f"""
+    <a class="today-card" href="{p['affiliate_url']}"
+       target="_blank" rel="noopener noreferrer" data-cat="{cat}">
+      <div class="today-img">
+        <img src="{p['image_url']}" alt="{p['name']}" loading="lazy">
+        <div class="today-rank">{rank}</div>
+      </div>
+      <div class="today-info">
+        <div class="today-name">{p['name']}</div>
+        <div class="today-stars">{stars} {p.get('review_average', 0):.1f}</div>
+        <div class="today-price">¥{p['price']:,}</div>
+        <span class="today-cta">チェック →</span>
+      </div>
+    </a>"""
+
+
+def _make_product_card(p: dict) -> str:
+    """全商品一覧カード（リスト形式）"""
     cat   = GENRE_TO_CAT.get(p.get("genre_id", ""), "all")
     stars = _star_html(p.get("review_average", 0))
     date_str = p.get("added_date", "")
@@ -55,7 +72,6 @@ def _make_card(p: dict, rank: int) -> str:
        target="_blank" rel="noopener noreferrer" data-cat="{cat}">
       <div class="product-img">
         <img src="{p['image_url']}" alt="{p['name']}" loading="lazy">
-        <div class="rank-badge">{rank}</div>
       </div>
       <div class="product-info">
         <div class="product-name">{p['name']}</div>
@@ -66,7 +82,7 @@ def _make_card(p: dict, rank: int) -> str:
         <div class="product-bottom">
           <div>
             <div class="price">¥{p['price']:,}</div>
-            <div class="price-sub">{date_str} 掲載</div>
+            <div class="date-badge">{date_str} 掲載</div>
           </div>
           <span class="cta-chip">チェック →</span>
         </div>
@@ -90,22 +106,28 @@ def generate_from_json():
     all_products = merge_products(existing, today_products)
     save_all_products(all_products)
 
-    # カード生成（全累積商品）
-    cards = ""
-    for i, p in enumerate(all_products):
-        cards += _make_card(p, i + 1)
+    # 本日のおすすめカード（横スクロール・ランク付き）
+    today_cards = ""
+    for i, p in enumerate(today_products):
+        today_cards += _make_today_card(p, i + 1)
+
+    # 全商品一覧カード（新しい順）
+    all_cards = ""
+    for p in all_products:
+        all_cards += _make_product_card(p)
 
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     html = (template
         .replace("{{PROFILE_NAME}}",  "楽天おすすめ厳選アイテム")
         .replace("{{UPDATE_DATE}}",   today_str)
-        .replace("{{PRODUCT_COUNT}}", str(len(all_products)))
-        .replace("{{PRODUCT_CARDS}}", cards)
+        .replace("{{TODAY_CARDS}}",   today_cards)
+        .replace("{{ALL_CARDS}}",     all_cards)
+        .replace("{{TOTAL_COUNT}}",   str(len(all_products)))
         .replace("{{INSTAGRAM_URL}}", "https://instagram.com/businessryuya")
         .replace("{{THREADS_URL}}",   "https://threads.net/@businessryuya")
     )
     OUTPUT_PATH.write_text(html, encoding="utf-8")
-    print(f"[ページ生成] 累計{len(all_products)}件の商品でページを生成しました")
+    print(f"[ページ生成] 本日{len(today_products)}件 / 累計{len(all_products)}件")
 
 
 if __name__ == "__main__":
