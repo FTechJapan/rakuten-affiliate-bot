@@ -1,127 +1,469 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{PROFILE_NAME}} | 楽天市場おすすめ商品まとめ</title>
-<meta name="description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。レビュー高評価・コスパ最強商品を厳選しています。">
-<meta name="p:domain_verify" content="6454cb6aefc7269e4cebfe83e55af763"/>
-<meta name="keywords" content="楽天,おすすめ,掃除グッズ,家電,雑貨,コスパ,レビュー">
-<meta property="og:title" content="{{PROFILE_NAME}} | 楽天市場おすすめ商品まとめ"/>
-<meta property="og:description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。"/>
-<meta property="og:type" content="website"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#faf8f5;--surface:#fff;--accent:#e63c0e;--text:#1a1008;--muted:#8a7060;--border:#ede8e0;--radius:16px;--shadow:0 2px 20px rgba(0,0,0,.07)}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.hero{background:var(--accent);padding:48px 20px 36px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08)}
-.hero-icon{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px;position:relative;z-index:1}
-.hero h1{font-size:22px;font-weight:900;color:#fff;position:relative;z-index:1}
-.hero p{font-size:13px;color:rgba(255,255,255,.8);margin-top:6px;line-height:1.6;position:relative;z-index:1}
-.hero-badges{display:flex;gap:8px;justify-content:center;margin-top:14px;position:relative;z-index:1;flex-wrap:wrap}
-.badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff}
-.container{max-width:480px;margin:0 auto;padding:24px 16px 60px}
-.update-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:24px}
-.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0}
-.section-label{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
-.category-nav{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:24px;scrollbar-width:none}
-.category-nav::-webkit-scrollbar{display:none}
-.cat-btn{font-size:12px;font-weight:700;padding:8px 16px;border-radius:20px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);white-space:nowrap;cursor:pointer;transition:all .15s;font-family:inherit}
-.cat-btn.active,.cat-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-.products{display:flex;flex-direction:column;gap:14px;margin-bottom:32px}
-.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;overflow:hidden;text-decoration:none;color:inherit;transition:transform .15s;position:relative;animation:fadeUp .3s ease both}
-.product-card:hover{transform:translateY(-2px)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.product-card:nth-child(1){animation-delay:.05s}
-.product-card:nth-child(2){animation-delay:.1s}
-.product-card:nth-child(3){animation-delay:.15s}
-.product-img{width:110px;min-height:110px;flex-shrink:0;background:var(--border);overflow:hidden;position:relative}
-.product-img img{width:100%;height:100%;object-fit:cover}
-.rank-badge{position:absolute;top:6px;left:6px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
-.product-info{padding:12px 14px 12px 12px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between}
-.product-name{font-size:13px;font-weight:700;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.product-meta{display:flex;align-items:center;gap:6px;margin-top:6px}
-.stars{color:#f59e0b;font-size:12px;letter-spacing:-1px}
-.review-count{font-size:11px;color:var(--muted)}
-.product-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
-.price{font-size:18px;font-weight:900;color:var(--accent);letter-spacing:-.5px}
-.price-sub{font-size:11px;color:var(--muted);margin-top:1px}
-.cta-chip{font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:var(--accent);color:#fff;white-space:nowrap}
-.sns-links{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
-.sns-link{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;text-decoration:none;color:inherit;font-weight:700;font-size:14px;transition:transform .15s}
-.sns-link:hover{transform:translateY(-1px)}
-.sns-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.sns-link .arrow{margin-left:auto;color:var(--muted);font-size:18px}
-.about-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:32px}
-.about-section h2{font-size:14px;font-weight:900;margin-bottom:8px}
-.about-section p{font-size:12px;color:var(--muted);line-height:1.8}
-footer{text-align:center;padding:32px 20px;font-size:11px;color:var(--muted);line-height:2;border-top:1px solid var(--border)}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{PROFILE_NAME}} | 楽天市場おすすめ商品まとめ</title>
+  <meta name="description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。レビュー高評価・コスパ最強商品を厳選しています。">
+  <meta name="p:domain_verify" content="6454cb6aefc7269e4cebfe83e55af763" />
+  <meta name="keywords" content="楽天,おすすめ,掃除グッズ,家電,雑貨,コスパ,レビュー">
+  <meta property="og:title" content="{{PROFILE_NAME}} | 楽天市場おすすめ商品まとめ" />
+  <meta property="og:description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。" />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #faf8f5;
+      --surface: #fff;
+      --accent: #e63c0e;
+      --text: #1a1008;
+      --muted: #8a7060;
+      --border: #ede8e0;
+      --radius: 16px;
+      --shadow: 0 2px 20px rgba(0, 0, 0, .07)
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh
+    }
+
+    .hero {
+      background: var(--accent);
+      padding: 48px 20px 36px;
+      text-align: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .08)
+    }
+
+    .hero-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .25);
+      border: 3px solid rgba(255, 255, 255, .6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 14px;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero h1 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .8);
+      margin-top: 6px;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .2);
+      color: #fff
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 16px 60px
+    }
+
+    .update-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 24px
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 12px
+    }
+
+    .category-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 24px;
+      scrollbar-width: none
+    }
+
+    .category-nav::-webkit-scrollbar {
+      display: none
+    }
+
+    .cat-btn {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit
+    }
+
+    .cat-btn.active,
+    .cat-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff
+    }
+
+    .products {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 32px
+    }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .15s;
+      position: relative;
+      animation: fadeUp .3s ease both
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px)
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .product-card:nth-child(1) {
+      animation-delay: .05s
+    }
+
+    .product-card:nth-child(2) {
+      animation-delay: .1s
+    }
+
+    .product-card:nth-child(3) {
+      animation-delay: .15s
+    }
+
+    .product-img {
+      width: 110px;
+      min-height: 110px;
+      flex-shrink: 0;
+      background: var(--border);
+      overflow: hidden;
+      position: relative
+    }
+
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .rank-badge {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .product-info {
+      padding: 12px 14px 12px 12px;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between
+    }
+
+    .product-name {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px
+    }
+
+    .stars {
+      color: #f59e0b;
+      font-size: 12px;
+      letter-spacing: -1px
+    }
+
+    .review-count {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .product-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -.5px
+    }
+
+    .price-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px
+    }
+
+    .cta-chip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: var(--accent);
+      color: #fff;
+      white-space: nowrap
+    }
+
+    .sns-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 32px
+    }
+
+    .sns-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-decoration: none;
+      color: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      transition: transform .15s
+    }
+
+    .sns-link:hover {
+      transform: translateY(-1px)
+    }
+
+    .sns-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0
+    }
+
+    .sns-link .arrow {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 18px
+    }
+
+    .about-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 32px
+    }
+
+    .about-section h2 {
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 8px
+    }
+
+    .about-section p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.8
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px 20px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 2;
+      border-top: 1px solid var(--border)
+    }
+  </style>
 </head>
+
 <body>
-<header class="hero">
-  <div class="hero-icon">&#128722;</div>
-  <h1>{{PROFILE_NAME}}</h1>
-  <p>掃除グッズ・家電・おしゃれ雑貨など<br>楽天市場で本当に良かったものを毎日更新</p>
-  <div class="hero-badges">
-    <span class="badge">楽天公式アフィリエイト</span>
-    <span class="badge">毎日更新</span>
-    <span class="badge">#PR</span>
-  </div>
-</header>
-<main class="container">
-  <div class="update-bar">
-    <span class="dot"></span>
-    <span>{{UPDATE_DATE}} 更新 &mdash; 本日のおすすめ {{PRODUCT_COUNT}}件</span>
-  </div>
+  <header class="hero">
+    <div class="hero-icon">&#128722;</div>
+    <h1>{{PROFILE_NAME}}</h1>
+    <p>掃除グッズ・家電・おしゃれ雑貨など<br>楽天市場で本当に良かったものを毎日更新</p>
+    <div class="hero-badges">
+      <span class="badge">楽天公式アフィリエイト</span>
+      <span class="badge">毎日更新</span>
+      <span class="badge">#PR</span>
+    </div>
+  </header>
+  <main class="container">
+    <div class="update-bar">
+      <span class="dot"></span>
+      <span>{{UPDATE_DATE}} 更新 &mdash; 本日のおすすめ {{PRODUCT_COUNT}}件</span>
+    </div>
 
-  <section class="about-section">
-    <h2>このサイトについて</h2>
-    <p>楽天市場でレビュー高評価・コスパ最強のアイテムを厳選して毎日ご紹介しています。掃除が楽になるグッズ、生活を便利にする家電、部屋をおしゃれにする雑貨など、実際に良いと思ったものだけを掲載しています。</p>
-  </section>
+    <section class="about-section">
+      <h2>このサイトについて</h2>
+      <p>楽天市場でレビュー高評価・コスパ最強のアイテムを厳選して毎日ご紹介しています。掃除が楽になるグッズ、生活を便利にする家電、部屋をおしゃれにする雑貨など、実際に良いと思ったものだけを掲載しています。</p>
+    </section>
 
-  <nav class="category-nav" aria-label="カテゴリ">
-    <button class="cat-btn active" onclick="filterCat('all',this)">すべて</button>
-    <button class="cat-btn" onclick="filterCat('living',this)">キッチン・日用品</button>
-    <button class="cat-btn" onclick="filterCat('cleaning',this)">掃除グッズ</button>
-    <button class="cat-btn" onclick="filterCat('appliance',this)">家電</button>
-    <button class="cat-btn" onclick="filterCat('interior',this)">おしゃれ雑貨</button>
-  </nav>
+    <nav class="category-nav" aria-label="カテゴリ">
+      <button class="cat-btn active" onclick="filterCat('all',this)">すべて</button>
+      <button class="cat-btn" onclick="filterCat('living',this)">キッチン・日用品</button>
+      <button class="cat-btn" onclick="filterCat('cleaning',this)">掃除グッズ</button>
+      <button class="cat-btn" onclick="filterCat('interior',this)">おしゃれ雑貨</button>
+      <button class="cat-btn" onclick="filterCat('storage',this)">収納・整理</button>
+      <button class="cat-btn" onclick="filterCat('beauty',this)">美容・スキンケア</button>
+    </nav>
 
-  <p class="section-label">本日のおすすめ</p>
-  <div class="products" id="product-list">
-    {{PRODUCT_CARDS}}
-  </div>
+    <p class="section-label">本日のおすすめ</p>
+    <div class="products" id="product-list">
+      {{PRODUCT_CARDS}}
+    </div>
 
-  <p class="section-label">SNSでもご紹介中</p>
-  <div class="sns-links">
-    <a href="{{INSTAGRAM_URL}}" class="sns-link" target="_blank" rel="noopener noreferrer">
-      <div class="sns-icon" style="background:#fce4ec">&#128248;</div>
-      <span>Instagram</span>
-      <span class="arrow">&#8250;</span>
-    </a>
-    <a href="{{THREADS_URL}}" class="sns-link" target="_blank" rel="noopener noreferrer">
-      <div class="sns-icon" style="background:#ede7f6">&#129525;</div>
-      <span>Threads</span>
-      <span class="arrow">&#8250;</span>
-    </a>
-  </div>
-</main>
-<footer>
-  <p>当サイトのリンクは楽天アフィリエイトを使用しています（#PR）</p>
-  <p>商品の価格・在庫状況は楽天市場の情報をご確認ください</p>
-</footer>
-<script>
-function filterCat(cat,btn){
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.product-card').forEach(c=>{
-    c.style.display=(cat==='all'||c.dataset.cat===cat)?'flex':'none';
-  });
-}
-</script>
+    <p class="section-label">SNSでもご紹介中</p>
+    <div class="sns-links">
+      <a href="{{INSTAGRAM_URL}}" class="sns-link" target="_blank" rel="noopener noreferrer">
+        <div class="sns-icon" style="background:#fce4ec">&#128248;</div>
+        <span>Instagram</span>
+        <span class="arrow">&#8250;</span>
+      </a>
+      <a href="{{THREADS_URL}}" class="sns-link" target="_blank" rel="noopener noreferrer">
+        <div class="sns-icon" style="background:#ede7f6">&#129525;</div>
+        <span>Threads</span>
+        <span class="arrow">&#8250;</span>
+      </a>
+    </div>
+  </main>
+  <footer>
+    <p>当サイトのリンクは楽天アフィリエイトを使用しています（#PR）</p>
+    <p>商品の価格・在庫状況は楽天市場の情報をご確認ください</p>
+  </footer>
+  <script>
+    function filterCat(cat, btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.product-card').forEach(c => {
+        c.style.display = (cat === 'all' || c.dataset.cat === cat) ? 'flex' : 'none';
+      });
+    }
+  </script>
 </body>
+
 </html>
