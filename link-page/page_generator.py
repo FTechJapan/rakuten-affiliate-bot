@@ -11,7 +11,7 @@ GENRE_TO_CAT = {
     "100533": "living",
     "565105": "cleaning",
     "215783": "interior",
-    "114931": "storage",
+    "562701": "storage",
     "100371": "beauty",
 }
 
