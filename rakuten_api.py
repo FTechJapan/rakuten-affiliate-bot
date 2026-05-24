@@ -153,7 +153,7 @@ def select_buzz_products(products: list[Product], need: int) -> list[Product]:
 
 上記から特にバズりやすいと思う商品の番号を{need}つ選び、
 以下のJSON形式のみで出力してください（説明文なし）:
-{{"selected": [1, 3, 5], "reasons": ["理由1", "理由2", "理由3"]}}
+{{"selected": [1, 3, 5]}}
 """
 
     try:
