@@ -2,60 +2,33 @@
 Threads 投稿モジュール
 Threads API (Meta) を使ってテキスト＋画像を投稿する
 
-事前準備:
-  1. https://developers.facebook.com でアプリを作成
-  2. Threadsプロダクトを追加
-  3. threads_content_publish パーミッションを取得
-  4. 長期アクセストークンを発行（60日有効）
+2026年Threadsルール対応：
+- トピックタグは1つのみ
+- アフィリエイトリンクは本文ではなく返信欄に投稿
 """
 import time
 import requests
-from pathlib import Path
 from config import THREADS_ACCESS_TOKEN, THREADS_USER_ID
 
 GRAPH_API = "https://graph.threads.net/v1.0"
 
 
-def _upload_image_to_threads(image_path: Path, caption: str) -> str:
-    """
-    画像コンテナを作成してコンテナIDを返す
-    ※ Threads APIはURLからの画像アップロードのため、
-       画像を事前にネットワーク上に公開する必要がある
-       → GitHub ActionsではArtifactとしてアップするか、
-         S3 / Cloudflare R2 などを使う（setup_storage.md参照）
-    """
-    raise NotImplementedError(
-        "画像をThreadsに投稿するには、画像を公開URLにアップロードする必要があります。\n"
-        "README の「画像ストレージ設定」を参照してください。"
-    )
-
-
-def post_text_to_threads(text: str) -> str | None:
-    """テキストのみをThreadsに投稿してpost_idを返す"""
-
-    # ── Step1: コンテナ作成 ────────────────────────────
+def _create_container(data: dict) -> str | None:
+    """メディアコンテナを作成してIDを返す"""
     resp = requests.post(
         f"{GRAPH_API}/{THREADS_USER_ID}/threads",
-        data={
-            "media_type": "TEXT",
-            "text": text,
-            "access_token": THREADS_ACCESS_TOKEN,
-        },
+        data={**data, "access_token": THREADS_ACCESS_TOKEN},
         timeout=30,
     )
     if not resp.ok:
         print(f"[Threads] コンテナ作成失敗: {resp.status_code} {resp.text}")
         return None
+    return resp.json().get("id")
 
-    container_id = resp.json().get("id")
-    if not container_id:
-        print("[Threads] container_id が取得できませんでした")
-        return None
 
-    # ── Step2: 公開 ────────────────────────────────────
-    time.sleep(5)   # コンテナの処理待ち
-
-    resp2 = requests.post(
+def _publish_container(container_id: str) -> str | None:
+    """コンテナを公開してpost_idを返す"""
+    resp = requests.post(
         f"{GRAPH_API}/{THREADS_USER_ID}/threads_publish",
         data={
             "creation_id": container_id,
@@ -63,37 +36,50 @@ def post_text_to_threads(text: str) -> str | None:
         },
         timeout=30,
     )
-    if not resp2.ok:
-        print(f"[Threads] 公開失敗: {resp2.status_code} {resp2.text}")
+    if not resp.ok:
+        print(f"[Threads] 公開失敗: {resp.status_code} {resp.text}")
+        return None
+    return resp.json().get("id")
+
+
+def _post_reply(post_id: str, text: str) -> str | None:
+    """投稿への返信を投稿する"""
+    container_id = _create_container({
+        "media_type": "TEXT",
+        "text": text,
+        "reply_to_id": post_id,
+    })
+    if not container_id:
         return None
 
-    post_id = resp2.json().get("id")
-    print(f"[Threads] 投稿完了 post_id={post_id}")
-    return post_id
+    time.sleep(3)
+    return _publish_container(container_id)
 
 
-def post_image_to_threads(image_url: str, caption: str) -> str | None:
+def post_image_to_threads(
+    image_url: str,
+    caption: str,
+    reply_text: str | None = None,
+    affiliate_url: str | None = None,
+) -> str | None:
     """
-    公開画像URL＋キャプションでThreadsに投稿する
-    image_url: ネット上からアクセスできるjpeg/pngのURL
+    公開画像URL＋キャプションでThreadsに投稿し、
+    返信としてアフィリエイトリンクを投稿する
+
+    image_url: 公開アクセス可能なJPEG画像URL
+    caption: 投稿本文（トピックタグ1つのみ）
+    reply_text: 返信テキスト
+    affiliate_url: 楽天アフィリエイトURL
     """
 
     # ── Step1: 画像コンテナ作成 ───────────────────────
-    resp = requests.post(
-        f"{GRAPH_API}/{THREADS_USER_ID}/threads",
-        data={
-            "media_type": "IMAGE",
-            "image_url": image_url,
-            "text": caption,
-            "access_token": THREADS_ACCESS_TOKEN,
-        },
-        timeout=30,
-    )
-    if not resp.ok:
-        print(f"[Threads] 画像コンテナ作成失敗: {resp.status_code} {resp.text}")
+    container_id = _create_container({
+        "media_type": "IMAGE",
+        "image_url": image_url,
+        "text": caption,
+    })
+    if not container_id:
         return None
-
-    container_id = resp.json().get("id")
 
     # ── Step2: 処理完了待ち（最大60秒） ─────────────────
     for attempt in range(12):
@@ -112,18 +98,21 @@ def post_image_to_threads(image_url: str, caption: str) -> str | None:
         print(f"[Threads] 画像処理中... ({attempt+1}/12)")
 
     # ── Step3: 公開 ────────────────────────────────────
-    resp2 = requests.post(
-        f"{GRAPH_API}/{THREADS_USER_ID}/threads_publish",
-        data={
-            "creation_id": container_id,
-            "access_token": THREADS_ACCESS_TOKEN,
-        },
-        timeout=30,
-    )
-    if not resp2.ok:
-        print(f"[Threads] 公開失敗: {resp2.status_code} {resp2.text}")
+    post_id = _publish_container(container_id)
+    if not post_id:
         return None
 
-    post_id = resp2.json().get("id")
     print(f"[Threads] 画像投稿完了 post_id={post_id}")
+
+    # ── Step4: 返信にアフィリエイトリンクを投稿 ──────────
+    if affiliate_url:
+        time.sleep(3)
+        reply_content = reply_text or "詳しくはこちら👇"
+        reply_content += f"\n\n{affiliate_url}"
+        reply_id = _post_reply(post_id, reply_content)
+        if reply_id:
+            print(f"[Threads] 返信投稿完了 reply_id={reply_id}")
+        else:
+            print("[Threads] 返信投稿失敗（メイン投稿は成功）")
+
     return post_id

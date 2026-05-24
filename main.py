@@ -97,7 +97,12 @@ def run(dry_run: bool = False, threads_only: bool = False):
             th_image_url = upload_image(th_image_path)
 
             # ── 5. Threads に投稿 ────────────────────────
-            threads_post_id = post_image_to_threads(th_image_url, copies["threads"])
+            threads_post_id = post_image_to_threads(
+                th_image_url,
+                copies["threads"],
+                reply_text=copies.get("threads_reply"),
+                affiliate_url=product.affiliate_url,
+            )
             log({
                 "platform": "threads",
                 "product": product.name,
