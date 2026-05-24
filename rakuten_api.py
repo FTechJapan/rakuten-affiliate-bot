@@ -19,11 +19,11 @@ from config import (
 BASE_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260401"
 
 # ── フィルター条件 ────────────────────────────────────────
-MIN_REVIEW_COUNT_BUZZ = 500    # バズ商品は最低500件レビュー
-MIN_REVIEW_AVERAGE_BUZZ = 4.2  # 評価4.2以上
+MIN_REVIEW_COUNT_BUZZ = 300    # バズ商品は最低500件レビュー
+MIN_REVIEW_AVERAGE_BUZZ = 4.1  # 評価4.1以上
 MIN_PRICE = 500                # 最低価格（安すぎる商品は除外）
 MAX_PRICE = 15000              # 最高価格（高すぎる商品は衝動買いされにくい）
-MIN_AFFILIATE_RATE = 2.0       # アフィリエイト率2%以上
+MIN_AFFILIATE_RATE = 1.5       # アフィリエイト率2%以上
 
 # ── 除外キーワード（服・下着・ファッション系） ────────────
 EXCLUDE_KEYWORDS = [
