@@ -24,6 +24,8 @@ from instagram_poster import post_image_to_instagram, check_daily_limit
 LOG_FILE = Path("output/log.jsonl")
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
+POSTED_FILE = Path("posted_items.json")
+
 
 def log(data: dict):
     """実行結果をJSONL形式で記録（毎日の成果確認用）"""
@@ -31,6 +33,21 @@ def log(data: dict):
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(json.dumps(data, ensure_ascii=False) + "\n")
     print(f"[LOG] {data}")
+
+
+def load_posted_items() -> set:
+    """投稿済みitem_codeを読み込む"""
+    if POSTED_FILE.exists():
+        with open(POSTED_FILE, encoding="utf-8") as f:
+            return set(json.load(f))
+    return set()
+
+
+def save_posted_items(posted: set):
+    """投稿済みitem_codeを保存（最新1000件まで）"""
+    items = list(posted)[-1000:]
+    with open(POSTED_FILE, "w", encoding="utf-8") as f:
+        json.dump(items, f, ensure_ascii=False)
 
 
 def run(dry_run: bool = False, threads_only: bool = False):
@@ -42,8 +59,17 @@ def run(dry_run: bool = False, threads_only: bool = False):
     # ── 1. 商品取得 ─────────────────────────────────────
     with open("products.json", encoding="utf-8") as f:
         data = json.load(f)
-    products = [Product(**p) for p in data]
-    print(f"[商品] products.jsonから{len(products)}件読み込み完了")
+
+    # 投稿済み商品を除外
+    posted_items = load_posted_items()
+    print(f"[重複防止] 投稿済み商品: {len(posted_items)}件")
+
+    products = [Product(**p) for p in data if p["item_code"] not in posted_items]
+    print(f"[商品] products.jsonから{len(products)}件読み込み完了（重複除外済み）")
+
+    if not products:
+        print("[商品] 投稿可能な商品がありません。終了します。")
+        sys.exit(0)
 
     for idx, product in enumerate(products):
         print(f"\n[{idx+1}/{len(products)}] {product.name[:40]}")
@@ -54,8 +80,8 @@ def run(dry_run: bool = False, threads_only: bool = False):
             copies = generate_copy(product)
 
             # ── 3. 画像生成 ──────────────────────────────
-            ig_image_path    = create_ad_image(product, "instagram")
-            th_image_path    = create_ad_image(product, "threads")
+            ig_image_path = create_ad_image(product, "instagram")
+            th_image_path = create_ad_image(product, "threads")
 
             if dry_run:
                 print("\n[DRY RUN] 投稿内容プレビュー:")
@@ -95,6 +121,10 @@ def run(dry_run: bool = False, threads_only: bool = False):
                     })
                 else:
                     print("[Instagram] 本日の投稿上限に達しました")
+
+            # ── 7. 投稿済みリストを更新 ──────────────────
+            posted_items.add(product.item_code)
+            save_posted_items(posted_items)
 
         except Exception as e:
             print(f"[エラー] {product.name[:30]}: {e}")
