@@ -30,6 +30,10 @@ def save_posted_items(posted: set):
 def main():
     print("楽天API商品取得開始...")
 
+    # 最新のposted_items.jsonをGitHubから取得
+    subprocess.run(["git", "pull", "--rebase"], check=False)
+    print("[Git] 最新データをpullしました")
+
     # 過去の投稿済み商品を読み込む
     posted_items = load_posted_items()
     print(f"[重複防止] 過去の投稿済み商品: {len(posted_items)}件")
