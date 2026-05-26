@@ -64,6 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
           git add posted_items.json
           git diff --cached --quiet || git commit -m "update posted items [skip ci]"
           git push
