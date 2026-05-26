@@ -78,12 +78,12 @@ def fetch_product_from_url(url: str) -> Product | None:
     shop_code, item_id = extracted
     item_code = f"{shop_code}:{item_id}"
 
+    # shopCodeとkeywordで検索
     params = {
         "applicationId": RAKUTEN_APP_ID,
         "accessKey": RAKUTEN_ACCESS_KEY,
         "affiliateId": RAKUTEN_AFFILIATE_ID,
         "shopCode": shop_code,
-        "itemCode": item_code,
         "hits": 1,
         "formatVersion": 2,
     }
