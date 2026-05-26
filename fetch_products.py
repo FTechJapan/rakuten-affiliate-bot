@@ -31,7 +31,7 @@ def main():
     print("楽天API商品取得開始...")
 
     # 最新のposted_items.jsonをGitHubから取得
-    subprocess.run(["git", "pull", "--rebase"], check=False)
+    subprocess.run(["git", "pull", "--rebase", "origin", "main"], check=False)
     print("[Git] 最新データをpullしました")
 
     # 過去の投稿済み商品を読み込む
