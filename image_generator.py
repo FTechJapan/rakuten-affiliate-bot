@@ -7,7 +7,6 @@
 """
 import io
 import os
-import random
 import textwrap
 from pathlib import Path
 
@@ -270,18 +269,11 @@ def _create_magazine(product: Product, platform: str) -> Image.Image:
 # ── メイン関数 ────────────────────────────────────────────────────
 def create_ad_image(product: Product, platform: str = "instagram") -> Path:
     """
-    ランダムなクールデザインで広告画像を生成してファイルパスを返す
+    Neon Accentデザインで広告画像を生成してファイルパスを返す
     platform: "instagram" (1080x1080) or "threads" (1080x1350)
     """
-    design = random.choice(["dark_minimal", "neon_accent", "magazine"])
-    print(f"[画像] デザイン: {design} / platform: {platform}")
-
-    if design == "dark_minimal":
-        canvas = _create_dark_minimal(product, platform)
-    elif design == "neon_accent":
-        canvas = _create_neon_accent(product, platform)
-    else:
-        canvas = _create_magazine(product, platform)
+    print(f"[画像] デザイン: neon_accent / platform: {platform}")
+    canvas = _create_neon_accent(product, platform)
 
     safe_name = product.item_code.replace("/", "_").replace(":", "_")
     out_path = OUTPUT_DIR / f"{safe_name}_{platform}.jpg"
