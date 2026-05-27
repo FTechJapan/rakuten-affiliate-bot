@@ -1,10 +1,9 @@
 """
 広告画像生成モジュール
-3パターンのデザインをランダムで使用する
-- minimal: シンプル・白背景
-- bold: ダーク背景・インパクト重視
-- elegant: グラデーション・高級感
-Instagram(1080x1080)とThreads(1080x1350)でレイアウトを自動調整
+クールな3パターンのデザイン
+- dark_minimal: 純黒背景・余白重視・シンプル
+- neon_accent: ダーク背景・蛍光オレンジアクセント
+- magazine: 白黒ベース・雑誌風タイポグラフィ
 """
 import io
 import os
@@ -13,9 +12,9 @@ import textwrap
 from pathlib import Path
 
 import requests
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 
-from config import BRAND_COLOR, ACCENT_COLOR, BG_COLOR, IMAGE_SIZES
+from config import IMAGE_SIZES
 from rakuten_api import Product
 
 OUTPUT_DIR = Path("output/images")
@@ -45,17 +44,6 @@ def _download_image(url: str) -> Image.Image:
     return Image.open(io.BytesIO(resp.content)).convert("RGBA")
 
 
-def _star_rating(average: float) -> str:
-    full  = int(average)
-    half  = 1 if (average - full) >= 0.5 else 0
-    empty = 5 - full - half
-    return "★" * full + "☆" * half + "☆" * empty
-
-
-def _format_price(price: int) -> str:
-    return f"¥{price:,}"
-
-
 def _crop_square(img: Image.Image, size: int) -> Image.Image:
     min_side = min(img.size)
     left = (img.width  - min_side) // 2
@@ -70,192 +58,211 @@ def _get_product_image(product: Product, size: int) -> Image.Image:
         return _crop_square(img, size)
     except Exception as e:
         print(f"[画像] 商品画像ダウンロード失敗: {e}")
-        return Image.new("RGBA", (size, size), (200, 200, 200, 255))
+        return Image.new("RGBA", (size, size), (40, 40, 40, 255))
 
 
-def _is_instagram(platform: str) -> bool:
+def _format_price(price: int) -> str:
+    return f"¥{price:,}"
+
+
+def _star_rating(average: float) -> str:
+    full  = int(average)
+    half  = 1 if (average - full) >= 0.5 else 0
+    empty = 5 - full - half
+    return "★" * full + "☆" * half + "☆" * empty
+
+
+def _is_ig(platform: str) -> bool:
     return platform == "instagram"
 
 
-# ── デザイン1: Minimal（シンプル・白背景） ────────────────────────
-def _create_minimal(product: Product, platform: str) -> Image.Image:
+# ── Design 1: Dark Minimal ────────────────────────────────────────
+def _create_dark_minimal(product: Product, platform: str) -> Image.Image:
     W, H = IMAGE_SIZES[platform]
-    ig = _is_instagram(platform)
+    ig = _is_ig(platform)
 
-    canvas = Image.new("RGB", (W, H), (250, 248, 244))
+    # 純黒背景
+    canvas = Image.new("RGB", (W, H), (10, 10, 10))
     draw = ImageDraw.Draw(canvas)
 
-    # ヘッダー
-    header_h = 72 if ig else 80
-    draw.rectangle([(0, 0), (W, header_h)], fill=BRAND_COLOR)
-    draw.text((32, header_h // 2), "楽天市場 おすすめアイテム",
-              font=_get_font(24 if ig else 28), fill=ACCENT_COLOR, anchor="lm")
-    draw.text((W - 32, header_h // 2), "#PR",
-              font=_get_font(20 if ig else 22), fill=(255, 200, 180), anchor="rm")
+    # 細いトップライン
+    draw.rectangle([(0, 0), (W, 3)], fill=(230, 60, 14))
 
-    # 商品画像（Instagram:小さめ、Threads:大きめ）
-    img_ratio = 0.58 if ig else 0.72
-    img_size = int(W * img_ratio)
+    # ヘッダーテキスト
+    draw.text((40, 28), "RAKUTEN", font=_get_font(16), fill=(80, 80, 80))
+    draw.text((W - 40, 28), "#PR", font=_get_font(16), fill=(80, 80, 80), anchor="rm")
+
+    # 商品画像（左寄せ）
+    img_size = int(W * 0.52) if ig else int(W * 0.58)
     product_img = _get_product_image(product, img_size)
-    card_padding = 16 if ig else 20
-    card = Image.new("RGB", (img_size + card_padding * 2, img_size + card_padding * 2), (255, 255, 255))
-    if product_img.mode == "RGBA":
-        card.paste(product_img.convert("RGB"), (card_padding, card_padding))
-    else:
-        card.paste(product_img, (card_padding, card_padding))
-    img_x = (W - card.width) // 2
-    img_y = header_h + 16
-    canvas.paste(card, (img_x, img_y))
+    img_x = 40
+    img_y = 60
+    # 薄いグレーの枠
+    draw.rectangle([(img_x - 1, img_y - 1), (img_x + img_size + 1, img_y + img_size + 1)],
+                   fill=(30, 30, 30))
+    canvas.paste(product_img.convert("RGB"), (img_x, img_y))
 
-    # 価格バッジ
-    price_text = _format_price(product.price)
-    badge_w = 220 if ig else 260
-    badge_h = 60 if ig else 72
-    badge_x = W - badge_w - 20
-    badge_y = img_y + img_size - 10
-    draw.rounded_rectangle([(badge_x, badge_y), (badge_x + badge_w, badge_y + badge_h)],
-                            radius=12, fill=BRAND_COLOR)
-    draw.text((badge_x + badge_w // 2, badge_y + badge_h // 2), price_text,
-              font=_get_font(40 if ig else 48), fill=ACCENT_COLOR, anchor="mm")
+    # 右側テキストエリア
+    tx = img_x + img_size + 30
+    tw = W - tx - 30
+
+    # 価格（大きく）
+    price_font_size = 52 if ig else 64
+    draw.text((tx, img_y + 10), _format_price(product.price),
+              font=_get_font(price_font_size), fill=(230, 60, 14))
+
+    # 評価
+    stars_y = img_y + (60 if ig else 80)
+    draw.text((tx, stars_y), _star_rating(product.review_average),
+              font=_get_font(20), fill=(180, 140, 60))
+    draw.text((tx, stars_y + 28), f"{product.review_average:.1f}  ({product.review_count:,}件)",
+              font=_get_font(16), fill=(100, 100, 100))
 
     # 商品名
-    text_top = img_y + img_size + card_padding * 2 + 10
-    font_name_size = 26 if ig else 32
-    line_h = 36 if ig else 44
-    name_lines = textwrap.wrap(product.name, width=24 if ig else 22)[:2]
+    name_y = stars_y + 70
+    name_lines = textwrap.wrap(product.name, width=10 if ig else 12)[:3]
     for i, line in enumerate(name_lines):
-        draw.text((40, text_top + i * line_h), line, font=_get_font(font_name_size), fill=(40, 40, 40))
+        draw.text((tx, name_y + i * 30), line, font=_get_font(20 if ig else 22), fill=(220, 220, 220))
 
-    # 星評価
-    stars_y = text_top + len(name_lines) * line_h + 8
-    stars_str = f"{_star_rating(product.review_average)}  {product.review_average:.1f}  ({product.review_count:,}件)"
-    draw.text((40, stars_y), stars_str, font=_get_font(22 if ig else 26), fill=(200, 140, 0))
+    # ボトムライン
+    draw.rectangle([(0, H - 3), (W, H)], fill=(230, 60, 14))
+
+    # CTA
+    btn_y = H - 70
+    draw.text((W // 2, btn_y), "プロフのリンクからチェック",
+              font=_get_font(20 if ig else 22), fill=(150, 150, 150), anchor="mm")
+
+    return canvas
+
+
+# ── Design 2: Neon Accent ─────────────────────────────────────────
+def _create_neon_accent(product: Product, platform: str) -> Image.Image:
+    W, H = IMAGE_SIZES[platform]
+    ig = _is_ig(platform)
+
+    # ダーク背景
+    canvas = Image.new("RGB", (W, H), (18, 18, 22))
+    draw = ImageDraw.Draw(canvas)
+
+    # 左側のネオンライン
+    draw.rectangle([(0, 0), (4, H)], fill=(255, 80, 20))
+
+    # ヘッダー帯
+    draw.rectangle([(0, 0), (W, 72)], fill=(22, 22, 28))
+    draw.text((24, 36), "楽天市場 厳選", font=_get_font(22), fill=(255, 255, 255), anchor="lm")
+    draw.text((W - 24, 36), "#PR", font=_get_font(20), fill=(255, 80, 20), anchor="rm")
+
+    # 商品画像（中央上）
+    img_size = int(W * 0.60) if ig else int(W * 0.65)
+    product_img = _get_product_image(product, img_size)
+
+    # グロー効果風の枠
+    glow_pad = 6
+    draw.rectangle(
+        [(W//2 - img_size//2 - glow_pad, 82 - glow_pad),
+         (W//2 + img_size//2 + glow_pad, 82 + img_size + glow_pad)],
+        fill=(40, 20, 10)
+    )
+    canvas.paste(product_img.convert("RGB"), (W//2 - img_size//2, 82))
+
+    # 価格ブロック
+    price_y = 82 + img_size + 20
+    draw.rectangle([(20, price_y), (W - 20, price_y + 80)], fill=(28, 28, 35))
+    draw.text((W//2, price_y + 40), _format_price(product.price),
+              font=_get_font(58 if ig else 68), fill=(255, 80, 20), anchor="mm")
+
+    # 評価・件数
+    review_y = price_y + 96
+    draw.text((W//2, review_y), f"{_star_rating(product.review_average)}  {product.review_average:.1f}  ({product.review_count:,}件)",
+              font=_get_font(22 if ig else 26), fill=(180, 140, 40), anchor="mm")
+
+    # 商品名
+    name_y = review_y + 44
+    name_lines = textwrap.wrap(product.name, width=22 if ig else 24)[:2]
+    for i, line in enumerate(name_lines):
+        draw.text((W//2, name_y + i * 36), line,
+                  font=_get_font(24 if ig else 28), fill=(200, 200, 210), anchor="mm")
 
     # CTAボタン
-    btn_h = 60
-    btn_y = H - btn_h - 44
-    draw.rounded_rectangle([(40, btn_y), (W - 40, btn_y + btn_h)], radius=30, fill=BRAND_COLOR)
-    draw.text((W // 2, btn_y + btn_h // 2), "プロフのリンクからチェック！",
-              font=_get_font(24 if ig else 28), fill=ACCENT_COLOR, anchor="mm")
+    btn_y = H - 110
+    draw.rounded_rectangle([(40, btn_y), (W - 40, btn_y + 60)],
+                            radius=4, fill=(255, 80, 20))
+    draw.text((W//2, btn_y + 30), "プロフのリンクからチェック",
+              font=_get_font(22 if ig else 26), fill=(255, 255, 255), anchor="mm")
 
     # フッター
-    draw.text((W // 2, H - 20), "#PR #楽天 #楽天お買い物",
-              font=_get_font(16 if ig else 18), fill=(160, 160, 160), anchor="ms")
+    draw.text((W//2, H - 28), "#PR",
+              font=_get_font(16), fill=(60, 60, 70), anchor="mm")
 
     return canvas
 
 
-# ── デザイン2: Bold（ダーク背景・インパクト重視） ─────────────────
-def _create_bold(product: Product, platform: str) -> Image.Image:
+# ── Design 3: Magazine ────────────────────────────────────────────
+def _create_magazine(product: Product, platform: str) -> Image.Image:
     W, H = IMAGE_SIZES[platform]
-    ig = _is_instagram(platform)
+    ig = _is_ig(platform)
 
-    canvas = Image.new("RGB", (W, H), (28, 28, 35))
+    # オフホワイト背景
+    canvas = Image.new("RGB", (W, H), (245, 243, 240))
     draw = ImageDraw.Draw(canvas)
 
-    draw.rectangle([(0, 0), (8, H)], fill=BRAND_COLOR)
+    # トップバー（黒）
+    draw.rectangle([(0, 0), (W, 80)], fill=(15, 15, 15))
+    draw.text((40, 40), "RAKUTEN SELECTION", font=_get_font(20), fill=(255, 255, 255), anchor="lm")
+    draw.text((W - 40, 40), "#PR", font=_get_font(18), fill=(230, 60, 14), anchor="rm")
 
-    header_y1 = 44 if ig else 50
-    header_y2 = 70 if ig else 80
-    draw.text((32, header_y1), "楽天市場", font=_get_font(22 if ig else 24), fill=(180, 180, 200), anchor="lm")
-    draw.text((32, header_y2), "厳選アイテム", font=_get_font(30 if ig else 36), fill=(255, 255, 255), anchor="lm")
-    draw.text((W - 32, header_y1), "#PR", font=_get_font(20 if ig else 22), fill=(255, 100, 80), anchor="rm")
+    # 商品画像（全幅）
+    img_h = int(H * 0.45) if ig else int(H * 0.48)
+    product_img = _get_product_image(product, W)
+    # 横長にリサイズ
+    try:
+        orig = _download_image(product.image_url)
+        orig_w, orig_h = orig.size
+        scale = W / orig_w
+        new_h = int(orig_h * scale)
+        orig_resized = orig.resize((W, new_h), Image.LANCZOS)
+        if new_h >= img_h:
+            top = (new_h - img_h) // 3
+            orig_cropped = orig_resized.crop((0, top, W, top + img_h))
+        else:
+            orig_cropped = Image.new("RGB", (W, img_h), (200, 200, 200))
+            orig_cropped.paste(orig_resized.convert("RGB"), (0, (img_h - new_h) // 2))
+        canvas.paste(orig_cropped.convert("RGB"), (0, 80))
+    except Exception:
+        canvas.paste(product_img.convert("RGB"), (0, 80))
+        img_h = product_img.size[1]
 
-    img_ratio = 0.56 if ig else 0.65
-    img_size = int(W * img_ratio)
-    product_img = _get_product_image(product, img_size)
-    mask = Image.new("L", (img_size, img_size), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([(0, 0), (img_size, img_size)], radius=24, fill=255)
-    img_x = (W - img_size) // 2
-    img_y = 105 if ig else 120
-    canvas.paste(product_img.convert("RGB"), (img_x, img_y), mask=mask)
+    # 黒帯オーバーレイ（画像下部）
+    overlay_y = 80 + img_h - 60
+    draw.rectangle([(0, overlay_y), (W, 80 + img_h)], fill=(15, 15, 15))
+    draw.text((40, overlay_y + 30), _format_price(product.price),
+              font=_get_font(44 if ig else 52), fill=(230, 60, 14), anchor="lm")
+    draw.text((W - 40, overlay_y + 30),
+              f"{_star_rating(product.review_average)} {product.review_average:.1f}",
+              font=_get_font(22), fill=(200, 160, 60), anchor="rm")
 
-    price_area_y = img_y + img_size + 16
-    draw.text((W // 2, price_area_y + 24), _format_price(product.price),
-              font=_get_font(58 if ig else 72), fill=BRAND_COLOR, anchor="mm")
+    # テキストエリア
+    text_y = 80 + img_h + 20
+    draw.line([(40, text_y), (W - 40, text_y)], fill=(15, 15, 15), width=2)
+    text_y += 16
 
-    name_lines = textwrap.wrap(product.name, width=22 if ig else 20)[:2]
-    name_font = 24 if ig else 30
-    name_line_h = 38 if ig else 46
+    # 商品名
+    name_lines = textwrap.wrap(product.name, width=24 if ig else 26)[:2]
     for i, line in enumerate(name_lines):
-        draw.text((W // 2, price_area_y + 66 + i * name_line_h), line,
-                  font=_get_font(name_font), fill=(220, 220, 230), anchor="mm")
+        draw.text((40, text_y + i * 38), line,
+                  font=_get_font(26 if ig else 30), fill=(20, 20, 20))
 
-    stars_y = price_area_y + 66 + len(name_lines) * name_line_h + 12
-    stars_str = f"{_star_rating(product.review_average)} {product.review_average:.1f} ({product.review_count:,}件)"
-    draw.text((W // 2, stars_y), stars_str, font=_get_font(20 if ig else 24), fill=(255, 200, 80), anchor="mm")
+    # レビュー件数
+    review_y = text_y + len(name_lines) * 38 + 12
+    draw.text((40, review_y), f"レビュー {product.review_count:,}件",
+              font=_get_font(18 if ig else 20), fill=(120, 120, 120))
 
-    btn_h = 60
-    btn_y = H - btn_h - 44
-    draw.rounded_rectangle([(40, btn_y), (W - 40, btn_y + btn_h)], radius=35, fill=BRAND_COLOR)
-    draw.text((W // 2, btn_y + btn_h // 2), "プロフのリンクからチェック！",
-              font=_get_font(24 if ig else 28), fill=(255, 255, 255), anchor="mm")
-
-    draw.text((W // 2, H - 20), "#PR #楽天 #楽天お買い物",
-              font=_get_font(16 if ig else 18), fill=(100, 100, 120), anchor="ms")
-
-    return canvas
-
-
-# ── デザイン3: Elegant（グラデーション・高級感） ──────────────────
-def _create_elegant(product: Product, platform: str) -> Image.Image:
-    W, H = IMAGE_SIZES[platform]
-    ig = _is_instagram(platform)
-
-    canvas = Image.new("RGB", (W, H), (252, 248, 240))
-    draw = ImageDraw.Draw(canvas)
-
-    grad_h = 140 if ig else 160
-    for i in range(grad_h):
-        r = int(230 + (252 - 230) * i / grad_h)
-        g = int(60  + (248 - 60)  * i / grad_h)
-        b = int(10  + (240 - 10)  * i / grad_h)
-        draw.line([(0, i), (W, i)], fill=(r, g, b))
-
-    draw.text((W // 2, 44 if ig else 50), "楽天市場 厳選アイテム",
+    # CTAライン
+    btn_y = H - 90
+    draw.rectangle([(0, btn_y - 1), (W, btn_y)], fill=(15, 15, 15))
+    draw.rectangle([(0, btn_y), (W, H)], fill=(15, 15, 15))
+    draw.text((W//2, btn_y + 44), "プロフのリンクからチェック",
               font=_get_font(22 if ig else 26), fill=(255, 255, 255), anchor="mm")
-    draw.text((W // 2, 70 if ig else 80), "RAKUTEN PREMIUM SELECTION",
-              font=_get_font(14 if ig else 16), fill=(255, 220, 200), anchor="mm")
-
-    img_ratio = 0.52 if ig else 0.6
-    img_size = int(W * img_ratio)
-    product_img = _get_product_image(product, img_size)
-
-    circle_bg = Image.new("RGB", (img_size + 40, img_size + 40), (255, 255, 255))
-    circle_mask = Image.new("L", (img_size + 40, img_size + 40), 0)
-    ImageDraw.Draw(circle_mask).ellipse([(0, 0), (img_size + 40, img_size + 40)], fill=255)
-    img_top = 100 if ig else 110
-    canvas.paste(circle_bg, ((W - img_size - 40) // 2, img_top), mask=circle_mask)
-
-    img_mask = Image.new("L", (img_size, img_size), 0)
-    ImageDraw.Draw(img_mask).ellipse([(0, 0), (img_size, img_size)], fill=255)
-    canvas.paste(product_img.convert("RGB"), ((W - img_size) // 2, img_top + 20), mask=img_mask)
-
-    separator_y = img_top + 20 + img_size + 20
-    draw.line([(80, separator_y), (W - 80, separator_y)], fill=(220, 210, 200), width=1)
-
-    price_y = separator_y + 40
-    draw.text((W // 2, price_y), _format_price(product.price),
-              font=_get_font(52 if ig else 64), fill=BRAND_COLOR, anchor="mm")
-
-    name_lines = textwrap.wrap(product.name, width=24 if ig else 22)[:2]
-    name_line_h = 38 if ig else 44
-    for i, line in enumerate(name_lines):
-        draw.text((W // 2, price_y + 50 + i * name_line_h), line,
-                  font=_get_font(24 if ig else 28), fill=(60, 45, 35), anchor="mm")
-
-    stars_y = price_y + 50 + len(name_lines) * name_line_h + 12
-    stars_str = f"{_star_rating(product.review_average)}  {product.review_average:.1f}  ({product.review_count:,}件)"
-    draw.text((W // 2, stars_y), stars_str, font=_get_font(20 if ig else 24), fill=(200, 160, 60), anchor="mm")
-
-    btn_h = 60
-    btn_y = H - btn_h - 44
-    draw.rounded_rectangle([(40, btn_y), (W - 40, btn_y + btn_h)], radius=35, fill=BRAND_COLOR)
-    draw.text((W // 2, btn_y + btn_h // 2), "プロフのリンクからチェック！",
-              font=_get_font(24 if ig else 28), fill=(255, 255, 255), anchor="mm")
-
-    draw.text((W // 2, H - 20), "#PR #楽天 #楽天お買い物",
-              font=_get_font(16 if ig else 18), fill=(180, 165, 150), anchor="ms")
 
     return canvas
 
@@ -263,18 +270,18 @@ def _create_elegant(product: Product, platform: str) -> Image.Image:
 # ── メイン関数 ────────────────────────────────────────────────────
 def create_ad_image(product: Product, platform: str = "instagram") -> Path:
     """
-    ランダムなデザインで広告画像を生成してファイルパスを返す
+    ランダムなクールデザインで広告画像を生成してファイルパスを返す
     platform: "instagram" (1080x1080) or "threads" (1080x1350)
     """
-    design = random.choice(["minimal", "bold", "elegant"])
+    design = random.choice(["dark_minimal", "neon_accent", "magazine"])
     print(f"[画像] デザイン: {design} / platform: {platform}")
 
-    if design == "minimal":
-        canvas = _create_minimal(product, platform)
-    elif design == "bold":
-        canvas = _create_bold(product, platform)
+    if design == "dark_minimal":
+        canvas = _create_dark_minimal(product, platform)
+    elif design == "neon_accent":
+        canvas = _create_neon_accent(product, platform)
     else:
-        canvas = _create_elegant(product, platform)
+        canvas = _create_magazine(product, platform)
 
     safe_name = product.item_code.replace("/", "_").replace(":", "_")
     out_path = OUTPUT_DIR / f"{safe_name}_{platform}.jpg"
