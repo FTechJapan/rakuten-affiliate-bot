@@ -177,6 +177,7 @@ def main():
 
     # 上から順にPOSTS_PER_DAY件取得
     selected_products = []
+    selected_urls = []  # ← 追加
     for url in new_urls:
         if len(selected_products) >= POSTS_PER_DAY:
             break
@@ -184,6 +185,7 @@ def main():
         product = fetch_product_from_url(url)
         if product:
             selected_products.append(product)
+            selected_urls.append(url)  # ← 追加
             print(f"[取得完了] {product.name[:40]} / ¥{product.price:,}")
         time.sleep(1)
 
