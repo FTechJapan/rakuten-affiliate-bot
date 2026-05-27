@@ -34,7 +34,14 @@ jobs:
           RAKUTEN_APP_ID:       ${{ secrets.RAKUTEN_APP_ID }}
           RAKUTEN_ACCESS_KEY:   ${{ secrets.RAKUTEN_ACCESS_KEY }}
           RAKUTEN_AFFILIATE_ID: ${{ secrets.RAKUTEN_AFFILIATE_ID }}
-        run: python3 link-page/page_generator.py
+        run: |
+          echo "products.json確認:"
+          cat products.json
+          echo "all_products.json確認:"
+          cat link-page/all_products.json
+          python3 link-page/page_generator.py
+          echo "生成後index.html確認:"
+          grep -c "product-card\|today-card" link-page/index.html || echo "カードなし"
 
       - name: GitHub Pages にアップロード
         uses: actions/upload-pages-artifact@v3
