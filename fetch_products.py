@@ -167,8 +167,7 @@ def main():
     all_urls = fetch_spreadsheet_urls()
 
     # 未投稿のURLに絞る
-    new_urls = [url for url in all_urls if extract_item_code_from_url(url) and
-                f"{extract_item_code_from_url(url)[0]}:{extract_item_code_from_url(url)[1]}" not in posted_items]
+    new_urls = [url for url in all_urls if url not in posted_items]
 
     print(f"[スプレッドシート] 未投稿URL: {len(new_urls)}件")
 
@@ -215,8 +214,8 @@ def main():
     print(f"{len(data)}件の商品をproducts.jsonに保存しました")
 
     # 投稿済みリストを更新
-    for p in selected_products:
-        posted_items.add(p.item_code)
+    for url in selected_urls:
+        posted_items.add(url)
     save_posted_items(posted_items)
 
     # GitHubにpush
