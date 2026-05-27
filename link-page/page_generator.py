@@ -3,8 +3,8 @@ from pathlib import Path
 import json, sys
 sys.path.insert(0, '.')
 
-TEMPLATE_PATH     = Path("link-page/index.html")
-OUTPUT_PATH       = Path("link-page/index.html")
+TEMPLATE_PATH = Path("link-page/template.html")
+OUTPUT_PATH   = Path("link-page/index.html") 
 ALL_PRODUCTS_PATH = Path("link-page/all_products.json")
 
 
