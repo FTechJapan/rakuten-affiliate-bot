@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>楽天おすすめ厳選アイテム | 楽天市場おすすめ商品まとめ</title>
-<meta name="description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。レビュー高評価・コスパ最強商品を厳選しています。">
-<meta name="keywords" content="楽天,おすすめ,掃除グッズ,家電,雑貨,コスパ,レビュー,収納,美容,スキンケア">
+<meta name="description" content="楽天市場で本当に良かったアイテムを毎日更新でご紹介。レビュー高評価・コスパ最強商品を厳選しています。">
+<meta name="keywords" content="楽天,おすすめ,掃除グッズ,家電,雑貨,コスパ,レビュー,収納,美容">
 <meta property="og:title" content="楽天おすすめ厳選アイテム | 楽天市場おすすめ商品まとめ"/>
-<meta property="og:description" content="掃除グッズ・家電・おしゃれ雑貨など、楽天市場で本当に良かったアイテムを毎日更新でご紹介。"/>
+<meta property="og:description" content="楽天市場で本当に良かったアイテムを毎日更新でご紹介。"/>
 <meta property="og:type" content="website"/>
 <meta name="p:domain_verify" content="6454cb6aefc7269e4cebfe83e55af763"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,8 +19,6 @@
   --muted:#8a7060;--border:#ede8e0;--radius:16px;--shadow:0 2px 20px rgba(0,0,0,.07);
 }
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
-/* ── ヘッダー ── */
 .hero{background:var(--accent);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08)}
 .hero-icon{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;position:relative;z-index:1}
@@ -28,28 +26,15 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .hero p{font-size:12px;color:rgba(255,255,255,.85);margin-top:6px;line-height:1.6;position:relative;z-index:1}
 .hero-badges{display:flex;gap:8px;justify-content:center;margin-top:12px;position:relative;z-index:1;flex-wrap:wrap}
 .badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff}
-
-/* ── コンテナ ── */
 .container{max-width:680px;margin:0 auto;padding:24px 16px 60px}
-
-/* ── 更新バー ── */
 .update-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:24px}
 .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0}
-
-/* ── セクションタイトル ── */
 .section-title{font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px}
 .section-sub{font-size:12px;color:var(--muted);margin-bottom:16px}
-
-/* ── 本日のおすすめ（横スクロール） ── */
 .today-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin-bottom:32px;scrollbar-width:none}
 .today-scroll::-webkit-scrollbar{display:none}
-
-.today-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);flex-shrink:0;width:200px;text-decoration:none;color:inherit;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s;position:relative;animation:fadeUp .3s ease both}
+.today-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);flex-shrink:0;width:200px;text-decoration:none;color:inherit;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s;position:relative}
 .today-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.12)}
-.today-card:nth-child(1){animation-delay:.05s}
-.today-card:nth-child(2){animation-delay:.10s}
-.today-card:nth-child(3){animation-delay:.15s}
-
 .today-img{width:100%;height:160px;background:var(--border);overflow:hidden;position:relative}
 .today-img img{width:100%;height:100%;object-fit:cover}
 .today-rank{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center}
@@ -58,20 +43,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .today-stars{color:#f59e0b;font-size:11px;letter-spacing:-1px;margin-bottom:4px}
 .today-price{font-size:16px;font-weight:900;color:var(--accent)}
 .today-cta{display:block;text-align:center;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:7px;margin-top:8px;border-radius:8px}
-
-/* ── カテゴリナビ ── */
-.category-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.cat-btn{font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);white-space:nowrap;cursor:pointer;transition:all .15s;font-family:inherit}
-.cat-btn.active,.cat-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-
-/* ── 商品一覧（リスト形式） ── */
-.products{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
-.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;overflow:hidden;text-decoration:none;color:inherit;transition:transform .15s;position:relative}
+.products{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;overflow:hidden;text-decoration:none;color:inherit;transition:transform .15s}
 .product-card:hover{transform:translateY(-2px)}
-
 .product-img{width:100px;min-height:100px;flex-shrink:0;background:var(--border);overflow:hidden}
 .product-img img{width:100%;height:100%;object-fit:cover}
-
 .product-info{padding:10px 12px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between}
 .product-name{font-size:12px;font-weight:700;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .product-meta{display:flex;align-items:center;gap:4px;margin-top:4px}
@@ -79,25 +55,23 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .review-count{font-size:10px;color:var(--muted)}
 .product-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
 .price{font-size:16px;font-weight:900;color:var(--accent)}
-.price-sub{font-size:10px;color:var(--muted)}
-.cta-chip{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--accent);color:#fff;white-space:nowrap;flex-shrink:0}
 .date-badge{font-size:9px;color:var(--muted);margin-top:2px}
-
-/* ── SNSリンク ── */
+.cta-chip{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--accent);color:#fff;white-space:nowrap;flex-shrink:0}
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:32px;flex-wrap:wrap}
+.page-btn{font-size:13px;font-weight:700;padding:8px 14px;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);cursor:pointer;transition:all .15s;font-family:inherit}
+.page-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.page-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed}
+.page-info{font-size:12px;color:var(--muted)}
+.about-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px}
+.about-section h2{font-size:14px;font-weight:900;margin-bottom:6px}
+.about-section p{font-size:12px;color:var(--muted);line-height:1.8}
 .sns-links{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
 .sns-link{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;text-decoration:none;color:inherit;font-weight:700;font-size:14px;transition:transform .15s}
 .sns-link:hover{transform:translateY(-1px)}
 .sns-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .sns-link .arrow{margin-left:auto;color:var(--muted)}
-
-/* ── サイト紹介 ── */
-.about-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px}
-.about-section h2{font-size:14px;font-weight:900;margin-bottom:6px}
-.about-section p{font-size:12px;color:var(--muted);line-height:1.8}
-
-/* ── フッター ── */
 footer{text-align:center;padding:24px 20px;font-size:11px;color:var(--muted);line-height:2;border-top:1px solid var(--border)}
-
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -112,44 +86,32 @@ footer{text-align:center;padding:24px 20px;font-size:11px;color:var(--muted);lin
     <span class="badge">#PR</span>
   </div>
 </header>
-
 <main class="container">
   <div class="update-bar">
     <span class="dot"></span>
-    <span>{{UPDATE_DATE}} 更新</span>
+    <span>2026年5月27日 更新</span>
   </div>
 
-  <!-- 本日のおすすめ -->
   <p class="section-title">&#127381; 本日のおすすめ 3選</p>
   <p class="section-sub">今日ピックアップした厳選アイテム</p>
   <div class="today-scroll">
-    {{TODAY_CARDS}}
+    
   </div>
 
-  <!-- サイト紹介 -->
   <div class="about-section">
     <h2>このサイトについて</h2>
-    <p>楽天市場でレビュー高評価・割引中のアイテムを厳選して毎日ご紹介しています。掃除グッズ・収納・美容・おしゃれ雑貨など、生活をより良くするアイテムを中心に掲載しています。</p>
+    <p>楽天市場でレビュー高評価のアイテムを厳選して毎日ご紹介しています。掃除グッズ・収納・美容・おしゃれ雑貨など、生活をより良くするアイテムを中心に掲載しています。</p>
   </div>
 
-  <!-- 全商品一覧 -->
-  <p class="section-title">&#128250; 過去の掲載商品一覧</p>
-  <p class="section-sub">{{TOTAL_COUNT}}件掲載中</p>
-
-  <nav class="category-nav" aria-label="カテゴリ">
-    <button class="cat-btn active" onclick="filterCat('all',this)">すべて</button>
-    <button class="cat-btn" onclick="filterCat('living',this)">キッチン・日用品</button>
-    <button class="cat-btn" onclick="filterCat('cleaning',this)">掃除グッズ</button>
-    <button class="cat-btn" onclick="filterCat('interior',this)">おしゃれ雑貨</button>
-    <button class="cat-btn" onclick="filterCat('storage',this)">収納・整理</button>
-    <button class="cat-btn" onclick="filterCat('beauty',this)">美容・スキンケア</button>
-  </nav>
+  <p class="section-title">&#128250; 掲載商品一覧</p>
+  <p class="section-sub">0件掲載中</p>
 
   <div class="products" id="product-list">
-    {{ALL_CARDS}}
+    
   </div>
 
-  <!-- SNSフォロー -->
+  <div class="pagination" id="pagination"></div>
+
   <p class="section-title">SNSでもご紹介中</p>
   <div class="sns-links" style="margin-top:12px">
     <a href="https://instagram.com/businessryuya" class="sns-link" target="_blank" rel="noopener noreferrer">
@@ -164,20 +126,43 @@ footer{text-align:center;padding:24px 20px;font-size:11px;color:var(--muted);lin
     </a>
   </div>
 </main>
-
 <footer>
   <p>当サイトのリンクは楽天アフィリエイトを使用しています（#PR）</p>
   <p>商品の価格・在庫状況は楽天市場の情報をご確認ください</p>
 </footer>
-
 <script>
-function filterCat(cat,btn){
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.product-card').forEach(c=>{
-    c.style.display=(cat==='all'||c.dataset.cat===cat)?'flex':'none';
+const PER_PAGE = 12;
+const cards = Array.from(document.querySelectorAll('.product-card'));
+let currentPage = 1;
+const totalPages = Math.ceil(cards.length / PER_PAGE);
+
+function showPage(page) {
+  currentPage = page;
+  cards.forEach((c, i) => {
+    c.style.display = (i >= (page-1)*PER_PAGE && i < page*PER_PAGE) ? 'flex' : 'none';
   });
+  renderPagination();
+  window.scrollTo({top: document.getElementById('product-list').offsetTop - 20, behavior: 'smooth'});
 }
+
+function renderPagination() {
+  const el = document.getElementById('pagination');
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+  let html = '';
+  html += `<button class="page-btn" onclick="showPage(${currentPage-1})" ${currentPage===1?'disabled':''}>＜</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="showPage(${i})">${i}</button>`;
+    } else if (Math.abs(i - currentPage) === 3) {
+      html += `<span class="page-info">...</span>`;
+    }
+  }
+  html += `<button class="page-btn" onclick="showPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>＞</button>`;
+  html += `<span class="page-info">${currentPage} / ${totalPages}ページ</span>`;
+  el.innerHTML = html;
+}
+
+showPage(1);
 </script>
 </body>
 </html>

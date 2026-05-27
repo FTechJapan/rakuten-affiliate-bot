@@ -7,14 +7,6 @@ TEMPLATE_PATH     = Path("link-page/index.html")
 OUTPUT_PATH       = Path("link-page/index.html")
 ALL_PRODUCTS_PATH = Path("link-page/all_products.json")
 
-GENRE_TO_CAT = {
-    "100533": "living",
-    "565105": "cleaning",
-    "215783": "interior",
-    "562701": "storage",
-    "100371": "beauty",
-}
-
 
 def _star_html(avg):
     full  = int(avg)
@@ -43,12 +35,10 @@ def merge_products(existing: list, new_products: list) -> list:
 
 
 def _make_today_card(p: dict, rank: int) -> str:
-    """本日のおすすめカード（横スクロール用）"""
-    cat   = GENRE_TO_CAT.get(p.get("genre_id", ""), "all")
     stars = _star_html(p.get("review_average", 0))
     return f"""
     <a class="today-card" href="{p['affiliate_url']}"
-       target="_blank" rel="noopener noreferrer" data-cat="{cat}">
+       target="_blank" rel="noopener noreferrer">
       <div class="today-img">
         <img src="{p['image_url']}" alt="{p['name']}" loading="lazy">
         <div class="today-rank">{rank}</div>
@@ -63,13 +53,11 @@ def _make_today_card(p: dict, rank: int) -> str:
 
 
 def _make_product_card(p: dict) -> str:
-    """全商品一覧カード（リスト形式）"""
-    cat   = GENRE_TO_CAT.get(p.get("genre_id", ""), "all")
     stars = _star_html(p.get("review_average", 0))
     date_str = p.get("added_date", "")
     return f"""
     <a class="product-card" href="{p['affiliate_url']}"
-       target="_blank" rel="noopener noreferrer" data-cat="{cat}">
+       target="_blank" rel="noopener noreferrer">
       <div class="product-img">
         <img src="{p['image_url']}" alt="{p['name']}" loading="lazy">
       </div>
@@ -91,27 +79,22 @@ def _make_product_card(p: dict) -> str:
 
 
 def generate_from_json():
-    # 本日の商品を読み込む
     with open("products.json", encoding="utf-8") as f:
         today_products = json.load(f)
 
     today_str = datetime.now(UTC).strftime("%Y年%-m月%-d日")
 
-    # 掲載日を付与
     for p in today_products:
         p["added_date"] = today_str
 
-    # 累積データに追加
     existing = load_all_products()
     all_products = merge_products(existing, today_products)
     save_all_products(all_products)
 
-    # 本日のおすすめカード（横スクロール・ランク付き）
     today_cards = ""
     for i, p in enumerate(today_products):
         today_cards += _make_today_card(p, i + 1)
 
-    # 全商品一覧カード（新しい順）
     all_cards = ""
     for p in all_products:
         all_cards += _make_product_card(p)
