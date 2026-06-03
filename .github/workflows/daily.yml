@@ -54,6 +54,10 @@ jobs:
           R2_BUCKET_NAME:         ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL:          ${{ secrets.R2_PUBLIC_URL }}
         run: |
+          if [ "$(cat products.json)" = "[]" ]; then
+            echo "products.jsonが空のためスキップします"
+            exit 0
+          fi
           ARGS=""
           if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
           if [ "${{ inputs.threads_only }}" = "true" ]; then ARGS="$ARGS --threads-only"; fi
