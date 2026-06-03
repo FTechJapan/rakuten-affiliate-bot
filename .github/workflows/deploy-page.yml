@@ -43,6 +43,15 @@ jobs:
           echo "生成後index.html確認:"
           grep -c "product-card\|today-card" link-page/index.html || echo "カードなし"
 
+      - name: all_products.jsonをリポジトリに保存
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin main
+          git add link-page/all_products.json
+          git diff --cached --quiet || git commit -m "update all_products [skip ci]"
+          git push
+
       - name: GitHub Pages にアップロード
         uses: actions/upload-pages-artifact@v3
         with:
