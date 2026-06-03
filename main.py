@@ -57,7 +57,6 @@ def run(dry_run: bool = False, threads_only: bool = False):
     print(f"{'='*50}\n")
 
     # ── 1. 商品取得 ─────────────────────────────────────
-    # products.jsonはfetch_products.py側で重複チェック済みなのでそのまま全件使う
     with open("products.json", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -68,8 +67,14 @@ def run(dry_run: bool = False, threads_only: bool = False):
         print("[商品] 投稿可能な商品がありません。終了します。")
         sys.exit(0)
 
-    # 投稿済みリストは投稿成功後の記録用に読み込む
+    # 投稿済みリストで重複チェック（同じproducts.jsonで2回実行しても再投稿しない）
     posted_items = load_posted_items()
+    products = [p for p in products if p.item_code not in posted_items]
+    print(f"[重複除外後] {len(products)}件の未投稿商品")
+
+    if not products:
+        print("[商品] 投稿可能な商品がありません（全て投稿済み）。終了します。")
+        sys.exit(0)
 
     for idx, product in enumerate(products):
         print(f"\n[{idx+1}/{len(products)}] {product.name[:40]}")
