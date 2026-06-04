@@ -1,0 +1,46 @@
+name: 商品取得 (毎朝6:55 JST)
+
+on:
+  schedule:
+    - cron: '55 21 * * *'  # 21:55 UTC = 翌6:55 JST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: 依存関係をインストール
+        run: pip install -r requirements.txt
+
+      - name: git設定
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 商品取得・push
+        env:
+          RAKUTEN_APP_ID:         ${{ secrets.RAKUTEN_APP_ID }}
+          RAKUTEN_ACCESS_KEY:     ${{ secrets.RAKUTEN_ACCESS_KEY }}
+          RAKUTEN_AFFILIATE_ID:   ${{ secrets.RAKUTEN_AFFILIATE_ID }}
+          ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
+          THREADS_ACCESS_TOKEN:   ${{ secrets.THREADS_ACCESS_TOKEN }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_ACCOUNT_ID:   ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
+          THREADS_USER_ID:        ${{ secrets.THREADS_USER_ID }}
+          R2_ACCOUNT_ID:          ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY:          ${{ secrets.R2_ACCESS_KEY }}
+          R2_SECRET_KEY:          ${{ secrets.R2_SECRET_KEY }}
+          R2_BUCKET_NAME:         ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL:          ${{ secrets.R2_PUBLIC_URL }}
+        run: python fetch_products.py
