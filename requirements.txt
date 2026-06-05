@@ -2,3 +2,4 @@ anthropic>=0.40.0
 Pillow>=11.0.0
 requests>=2.32.0
 boto3>=1.35.0       # Cloudflare R2 / S3アップロード用
+python-dotenv>=1.0.0

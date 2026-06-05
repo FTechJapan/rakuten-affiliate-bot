@@ -3,6 +3,8 @@
 GitHub ActionsのSecretsに同名で登録してください
 """
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # ── 楽天API ──────────────────────────────────────────────
 RAKUTEN_APP_ID = os.environ["RAKUTEN_APP_ID"]          # 楽天デベロッパー登録で取得
