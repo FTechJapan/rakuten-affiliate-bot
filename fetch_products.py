@@ -78,12 +78,13 @@ def fetch_product_from_url(url: str) -> Product | None:
     shop_code, item_id = extracted
     item_code = f"{shop_code}:{item_id}"
 
-    # itemCodeで直接検索（shopCode:itemId形式）
+    # shopCode + item_idをkeywordで検索（特定商品を狙い打ち）
     params = {
         "applicationId": RAKUTEN_APP_ID,
         "accessKey": RAKUTEN_ACCESS_KEY,
         "affiliateId": RAKUTEN_AFFILIATE_ID,
-        "itemCode": item_code,
+        "shopCode": shop_code,
+        "keyword": item_id,
         "hits": 1,
         "formatVersion": 2,
     }
@@ -100,12 +101,11 @@ def fetch_product_from_url(url: str) -> Product | None:
         items = data.get("Items", [])
 
         if not items:
-            # itemCodeで見つからない場合はshopCode+keyword検索にフォールバック
+            # keywordで見つからない場合はshopCodeのみで再検索
             params2 = {
                 "applicationId": RAKUTEN_APP_ID,
                 "accessKey": RAKUTEN_ACCESS_KEY,
                 "affiliateId": RAKUTEN_AFFILIATE_ID,
-                "keyword": item_id.replace("-", " "),
                 "shopCode": shop_code,
                 "hits": 1,
                 "formatVersion": 2,
