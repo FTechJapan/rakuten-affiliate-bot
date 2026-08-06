@@ -3,6 +3,16 @@
 楽天商品検索API v2 を使ってランキング上位商品を取得する
 Step1: フィルター条件で絞り込み
 Step2: Claude APIでバズりそうな商品を最終選別
+
+⚠️ 現在の本番フローでは未使用（レガシー）:
+  fetch_trending_products / select_buzz_products / pick_daily_products は
+  「ジャンルランキングから自動取得→Claudeで選別」する旧方式です。
+  現在は fetch_products.py が Googleスプレッドシートに登録したURLから
+  商品を取得する方式に切り替わっており、この3関数はどこからも呼ばれていません。
+  Product dataclass と RAKUTEN_APP_ID 等の再エクスポートは
+  fetch_products.py から引き続き使われています。
+  旧方式を復活させたくなったときのために残していますが、
+  新規に触る場合は本当に必要か確認してください。
 """
 import json
 import requests

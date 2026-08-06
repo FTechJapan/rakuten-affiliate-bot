@@ -68,12 +68,9 @@ jobs:
         run: |
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git stash || true
-            git pull --rebase origin main
-            git stash pop || true
-            git add posted_items.json
-            git diff --cached --quiet || git commit -m "update posted items [skip ci]"
-            git push
+            python3 scripts/git_sync_json.py posted_items.json \
+              --mode merge --limit 1000 \
+              --message "update posted items [skip ci]"
 
       - name: ログをArtifactとして保存（30日間）
         if: always()

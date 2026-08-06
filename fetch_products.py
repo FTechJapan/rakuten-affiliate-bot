@@ -9,6 +9,7 @@ import json
 import csv
 import io
 import re
+import sys
 import time
 import subprocess
 import requests
@@ -16,6 +17,8 @@ from datetime import datetime, UTC
 from pathlib import Path
 from rakuten_api import Product, RAKUTEN_APP_ID, RAKUTEN_ACCESS_KEY, RAKUTEN_AFFILIATE_ID
 from config import POSTS_PER_DAY
+
+SYNC_SCRIPT = Path(__file__).parent / "scripts" / "git_sync_json.py"
 
 POSTED_LOG = Path("posted_items.json")
 
@@ -27,10 +30,19 @@ RAKUTEN_SEARCH_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Sear
 
 
 def load_posted_items() -> set:
-    if POSTED_LOG.exists():
-        with open(POSTED_LOG, encoding="utf-8") as f:
-            return set(json.load(f))
-    return set()
+    if not POSTED_LOG.exists():
+        return set()
+    with open(POSTED_LOG, encoding="utf-8") as f:
+        text = f.read()
+    try:
+        return set(json.loads(text))
+    except json.JSONDecodeError as e:
+        raise RuntimeError(
+            f"{POSTED_LOG} がJSONとして読み込めません（壊れています）: {e}\n"
+            "おそらくgitのマージコンフリクトマーカーが混入しています。"
+            "`git log -- posted_items.json` で直近の正常なコミットを確認し、"
+            "手動で復元してから再実行してください。"
+        ) from e
 
 
 def save_posted_items(posted: set):
@@ -154,10 +166,16 @@ def main():
     print("商品取得開始...")
 
     # 最新データをGitHubから取得
-    subprocess.run(["git", "stash"], check=False)
-    subprocess.run(["git", "pull", "--rebase", "origin", "main"], check=False)
-    subprocess.run(["git", "stash", "pop"], check=False)
-    print("[Git] 最新データをpullしました")
+    # fast-forwardできる場合のみ取り込む（stash/pull --rebase/stash pop は
+    # テキストレベルのマージコンフリクトでJSONが壊れる事故につながるため使わない。
+    # 取り込めなくても実害はない: posted_items.json は最後にgit_sync_json.pyが
+    # リモートとJSONレベルで安全にマージしてからpushする）
+    subprocess.run(["git", "fetch", "origin", "main"], check=False)
+    ff = subprocess.run(["git", "merge", "--ff-only", "origin/main"], check=False)
+    if ff.returncode == 0:
+        print("[Git] 最新データをpullしました")
+    else:
+        print("[Git] fast-forwardできなかったため、ローカルの状態のまま続行します")
 
     # 投稿済み商品を読み込む
     posted_items = load_posted_items()
@@ -221,10 +239,23 @@ def main():
     save_posted_items(posted_items)
 
     # GitHubにpush
-    subprocess.run(["git", "add", "products.json", "posted_items.json"])
-    subprocess.run(["git", "commit", "-m", f"update products {datetime.now(UTC).strftime('%Y-%m-%d')}"])
-    subprocess.run(["git", "push"])
-    print("GitHubにpushしました → GitHub Actionsが自動起動します")
+    # products.json は「今日の内容で完全に置き換え」、posted_items.json は
+    # 「リモートとJSONレベルで安全にマージ」してからpushする（git_sync_json.py参照）。
+    # git stash/pull --rebase/stash pop によるコンフリクトマーカー混入事故を避けるため。
+    date_str = datetime.now(UTC).strftime("%Y-%m-%d")
+    r1 = subprocess.run([
+        sys.executable, str(SYNC_SCRIPT), "products.json",
+        "--mode", "overwrite", "--message", f"update products {date_str}",
+    ])
+    r2 = subprocess.run([
+        sys.executable, str(SYNC_SCRIPT), "posted_items.json",
+        "--mode", "merge", "--limit", "1000",
+        "--message", f"update posted items {date_str} [skip ci]",
+    ])
+    if r1.returncode == 0 and r2.returncode == 0:
+        print("GitHubにpushしました → GitHub Actionsが自動起動します")
+    else:
+        print("⚠️ pushに失敗した可能性があります。git log / git status を確認してください。")
 
 
 if __name__ == "__main__":

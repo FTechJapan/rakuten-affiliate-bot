@@ -37,10 +37,19 @@ def log(data: dict):
 
 def load_posted_items() -> set:
     """投稿済みitem_codeを読み込む"""
-    if POSTED_FILE.exists():
-        with open(POSTED_FILE, encoding="utf-8") as f:
-            return set(json.load(f))
-    return set()
+    if not POSTED_FILE.exists():
+        return set()
+    with open(POSTED_FILE, encoding="utf-8") as f:
+        text = f.read()
+    try:
+        return set(json.loads(text))
+    except json.JSONDecodeError as e:
+        raise RuntimeError(
+            f"{POSTED_FILE} がJSONとして読み込めません（壊れています）: {e}\n"
+            "おそらくgitのマージコンフリクトマーカーが混入しています。"
+            "`git log -- posted_items.json` で直近の正常なコミットを確認し、"
+            "手動で復元してから再実行してください。"
+        ) from e
 
 
 def save_posted_items(posted: set):

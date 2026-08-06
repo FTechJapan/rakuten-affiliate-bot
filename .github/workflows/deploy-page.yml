@@ -47,12 +47,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git stash || true
-          git pull --rebase origin main
-          git stash pop || true
-          git add link-page/all_products.json
-          git diff --cached --quiet || git commit -m "update all_products [skip ci]"
-          git push
+          python3 scripts/git_sync_json.py link-page/all_products.json \
+            --mode merge --key item_code --limit 300 \
+            --message "update all_products [skip ci]"
 
       - name: GitHub Pages にアップロード
         uses: actions/upload-pages-artifact@v3
