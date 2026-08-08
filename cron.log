@@ -108,3 +108,62 @@
 [2026-08-05 07:07:14] 終了 (exit 0)
 [2026-08-06 07:06:18] 起動
 [2026-08-06 07:06:21] 終了 (exit 0)
+[2026-08-07 07:07:05] 起動
+From https://github.com/FTechJapan/rakuten-affiliate-bot
+ * branch            main       -> FETCH_HEAD
+   331c099..7af5c7c  main       -> origin/main
+Updating 331c099..7af5c7c
+Fast-forward
+ link-page/all_products.json | 47 ++++++++++++++++++++++++++++++++++++++++++++-
+ posted_items.json           |  2 +-
+ 2 files changed, 47 insertions(+), 2 deletions(-)
+[git_sync_json] products.json をpushしました（1回目で成功）
+[git_sync_json] posted_items.json をpushしました（1回目で成功）
+商品取得開始...
+[Git] 最新データをpullしました
+[重複防止] 過去の投稿済み商品: 166件
+[スプレッドシート] 95件のURLを取得
+[スプレッドシート] 未投稿URL: 9件
+[取得中] https://brandavenue.rakuten.co.jp/item/SG7319/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[URL解析] 失敗: https://brandavenue.rakuten.co.jp/item/SG7319/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[取得中] https://brandavenue.rakuten.co.jp/item/RS1395/?scid=af_pc_room_pc_id_offi&sc2id=af_101_0_0
+[URL解析] 失敗: https://brandavenue.rakuten.co.jp/item/RS1395/?scid=af_pc_room_pc_id_offi&sc2id=af_101_0_0
+[取得中] https://item.rakuten.co.jp/zen-you/pebc-ctdstbn/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[取得完了] PUEBCO (プエブコ) COUNTER TOP DUSTBIN / カウンタ / ¥3,850
+[取得中] https://item.rakuten.co.jp/zen-you/pebc-clr/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[取得完了] PUEBCO (プエブコ) CLEANING LINT ROLLER / クリー / ¥2,200
+[取得中] https://item.rakuten.co.jp/zen-you/pebc-2way-ts/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[取得完了] PUEBCO (プエブコ) 2-WAY TISSUE SLEEVE / アルミニ / ¥2,200
+3件の商品をproducts.jsonに保存しました
+GitHubにpushしました → GitHub Actionsが自動起動します
+[2026-08-07 07:38:30] 終了 (exit 0)
+[2026-08-09 00:30:44] 起動
+From https://github.com/FTechJapan/rakuten-affiliate-bot
+ * branch            main       -> FETCH_HEAD
+Updating a085058..2e4a477
+Fast-forward
+ link-page/all_products.json | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ posted_items.json           |  2 +-
+ 2 files changed, 46 insertions(+), 1 deletion(-)
+[git_sync_json] products.json をpushしました（1回目で成功）
+[git_sync_json] posted_items.json をpushしました（1回目で成功）
+商品取得開始...
+[Git] 最新データをpullしました
+[重複防止] 過去の投稿済み商品: 172件
+[スプレッドシート] 1314件のURLを取得
+[スプレッドシート] 未投稿URL: 1225件
+[取得中] https://brandavenue.rakuten.co.jp/item/SG7319/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[URL解析] 失敗: https://brandavenue.rakuten.co.jp/item/SG7319/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[取得中] https://brandavenue.rakuten.co.jp/item/RS1395/?scid=af_pc_room_pc_id_offi&sc2id=af_101_0_0
+[URL解析] 失敗: https://brandavenue.rakuten.co.jp/item/RS1395/?scid=af_pc_room_pc_id_offi&sc2id=af_101_0_0
+[取得中] https://item.rakuten.co.jp/crouka/apfr-closet-tag/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[取得完了] アポテーケ APFR クローゼット タグ CLOSET TAG 香り 芳香剤 吊 / ¥2,530
+[取得中] https://item.rakuten.co.jp/hauhau/ymj-10699/?scid=room_pc_id_shop
+[取得完了] 山崎実業 仕切りが動く密閉ピルケース タワー 公式 tower 10699 10 / ¥1,276
+[取得中] https://brandavenue.rakuten.co.jp/item/HP2578/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[URL解析] 失敗: https://brandavenue.rakuten.co.jp/item/HP2578/?scid=af_pc_room_pc_id_reg&sc2id=af_101_0_0
+[取得中] https://item.rakuten.co.jp/ignis/2409sd860/?scid=af_pc_room_pc_id_offi&sc2id=af_101_0_0
+[取得完了] 【15％OFF 全品対象】【特典付】ランドリーバスケット キャスター付き 大容量 / ¥5,980
+3件の商品をproducts.jsonに保存しました
+GitHubにpushしました → GitHub Actionsが自動起動します
+[2026-08-09 00:30:58] 終了 (exit 0)
